@@ -127,7 +127,7 @@ static void scrollDownOnce(unsigned int background)
     int x = getXInitialPos(cursorPosX);
     for (int j = 0; j < verPixelCount() - CHAR_HEIGHT; j++)
     {
-        for (int i = x; i < xLimit; i++)
+        for (int i = x * CHAR_WIDTH; i < xLimit; i++)
         {
             copyPixel(i, j + CHAR_HEIGHT, i, j);
         }
