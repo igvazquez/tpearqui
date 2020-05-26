@@ -121,10 +121,12 @@ void startShell()
         if (currentShell == SHELL)
         {
             processInstruction(userInput[SHELL]);
+            printf(SHELL_MESSAGE, 0x5CFEE4, 0);
         }
         else
         {
             //processcalc
+            printf(SHELL_MESSAGE, 0x5CFEE4, 0);
         }
 
         for (int i = 0; i < verticalPixelCount(); i++)
@@ -169,13 +171,13 @@ static int readUserInput(char *buffer, int maxSize)
                 {
                     currentShell = CALCULATOR;
                     setCursorPos(getScreenWidth() / 2 + 1, getScreenHeight() - 1);
-                    printf("Fleshy: $>", 0x5CFEE4, 0);
+                    printf(SHELL_MESSAGE, 0x5CFEE4, 0);
                 }
                 else
                 {
                     currentShell = SHELL;
                     setCursorPos(0, getScreenHeight() - 1);
-                    printf("Fleshy: $>", 0x5CFEE4, 0);
+                    printf(SHELL_MESSAGE, 0x5CFEE4, 0);
                 }
             }
 
