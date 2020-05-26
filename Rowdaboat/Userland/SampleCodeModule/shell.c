@@ -5,8 +5,8 @@
 #include <music.h>
 
 //constantes para la definicion de arrays
-#define SHELL_MESSAGE "Fleshy: $>"
-#define USER_INPUT_SIZE getScreenWidth() / 2 - strlen(SHELL_MESSAGE) - 1
+#define SHELL_MESSAGE "Shell: $>"
+#define USER_INPUT_SIZE getScreenWidth()/2 - strlen(SHELL_MESSAGE) - 1
 #define MAX_FUNCTIONS 20
 #define MAX_ARGUMENTS_SIZE 5
 #define SHELL 0
@@ -108,10 +108,10 @@ void startShell()
         drawPixel(horizontalPixelCount() / 2, i, 0x2b66cc);
     }
 
-    setCursorPos(getScreenWidth() / 2 + 1, getScreenHeight() - 1);
-    printf("Fleshy: $>", 0x5CFEE4, 0);
-    setCursorPos(0, getScreenHeight() - 1);
-    printf("Fleshy: $>", 0x5CFEE4, 0);
+    setCursorPos(getScreenWidth()/2 + 1, getScreenHeight() - 1);
+    printf(SHELL_MESSAGE, 0x5CFEE4, 0);
+    setCursorPos(0,getScreenHeight() - 1);
+    printf(SHELL_MESSAGE, 0x5CFEE4, 0);
 
     //Se espera hasta que se reciba un enter y luego, se procesa el texto ingresado.
     //Si coincide con el nombre de una funcion se la ejecuta, sino se vuelve a modo lectura.
