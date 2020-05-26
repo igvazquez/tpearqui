@@ -8,7 +8,6 @@ unsigned int screenHeight;
 static int parseSpecialCharacter(char c, unsigned int background);
 static void backspace(unsigned int background);
 static void enter(unsigned int background);
-static void tab();
 static void scrollDownOnce(unsigned int background);
 
 void putchar(char c)

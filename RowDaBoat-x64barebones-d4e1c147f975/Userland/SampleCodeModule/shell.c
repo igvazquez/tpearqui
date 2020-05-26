@@ -6,11 +6,12 @@
 
 //constantes para la definicion de arrays
 #define SHELL_MESSAGE "Fleshy: $>"
-#define USER_INPUT_SIZE getScreenWidth()/2 - strlen(SHELL_MESSAGE)
+#define USER_INPUT_SIZE getScreenWidth()/2 - strlen(SHELL_MESSAGE) - 1
 #define MAX_FUNCTIONS 20
 #define MAX_ARGUMENTS_SIZE 5
 #define SHELL 0
 #define CALCULATOR 1
+#define SHELLS 2
 
 #define END_OF_EXECUTION_KEY 27
 #define GAME_RETURNING_KEY '\t'
@@ -98,27 +99,30 @@ void startShell(){
     loadFunctions();
     clearScreen();
     setCursorPos(0,getScreenHeight() - 1);
-    char userInput[USER_INPUT_SIZE];
+    char userInput[SHELLS][USER_INPUT_SIZE];
     
     for(int i=0; i < verticalPixelCount(); i++){
         drawPixel(horizontalPixelCount()/2, i, 0x2b66cc);
     }
 
+    setCursorPos(getScreenWidth()/2 + 1, getScreenHeight() - 1);
+    printf("Fleshy: $>", 0x5CFEE4, 0);
+    setCursorPos(0,getScreenHeight() - 1);
+    printf("Fleshy: $>", 0x5CFEE4, 0);
+
     //Se espera hasta que se reciba un enter y luego, se procesa el texto ingresado.
     //Si coincide con el nombre de una funcion se la ejecuta, sino se vuelve a modo lectura.
-    while(readUserInput(userInput,USER_INPUT_SIZE)){
+    while(readUserInput(userInput[currentShell],USER_INPUT_SIZE)){
 
         if(currentShell == SHELL){
-            processInstruction(userInput);
-            printf("Fleshy: $>", 0x5CFEE4, 0);
+            processInstruction(userInput[SHELL]);
         }else{
-            printf("Calc: $>", 0x5CFEE4, 0);
+            //processcalc
         }
         
         for(int i=0; i < verticalPixelCount(); i++){
             drawPixel(horizontalPixelCount()/2, i, 0x2b66cc);
         }
-        
     }
 }
 
@@ -159,20 +163,18 @@ static int readUserInput(char * buffer, int maxSize){
             if( c == '\t'){
                 if(currentShell == SHELL){
                     currentShell = CALCULATOR;
-                    setCursorPos(getScreenWidth()/2,getScreenHeight() - 1);
-                    printint(currentShell);
+                    setCursorPos(getScreenWidth()/2 + 1, getScreenHeight() - 1);
+                    printf("Fleshy: $>", 0x5CFEE4, 0);
                 }else{
                     currentShell = SHELL;
                     setCursorPos(0,getScreenHeight() - 1);
-                    printint(currentShell);
+                    printf("Fleshy: $>", 0x5CFEE4, 0);
                 }
             }
 
             if( c != '\b'){
                 putchar(c);
-
                 buffer[counter++] = c;
-
             } else if(counter > 0){
                 putchar('\b');
                 counter--;
