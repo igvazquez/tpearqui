@@ -151,15 +151,6 @@ static int readUserInput(char * buffer, int maxSize){
             if(c == END_OF_EXECUTION_KEY)
                 return 0;
 
-            if(c == GAME_RETURNING_KEY){ //Tecla para arrancar arkanoid si hay un juego empezado.
-                if(gameAlreadyStarted()){
-                    startArkanoid(CONTINUE);
-                    buffer[0] = 0;
-                    counter = 0;
-                    return 1;
-                }
-            }
-
             if( c == '\t'){
                 if(currentShell == SHELL){
                     currentShell = CALCULATOR;
