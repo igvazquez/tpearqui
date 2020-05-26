@@ -44,30 +44,33 @@ void putcharf(char c, unsigned int font, unsigned int background)
     drawChar(cursorPosX * CHAR_WIDTH, cursorPosY * CHAR_HEIGHT, c, font, background);
 
     cursorPosX++;
-    if (cursorPosX >= screenWidth)
+    int screenId = getScreenId(cursorPosX);
+    if ((screenId == 0 && cursorPosX >= (screenWidth / 2)) || (screenId == 1 && cursorPosX >= screenWidth))
     {
-        cursorPosX = 0;
+        cursorPosX = getXInitialPos(cursorPosX);
         cursorPosY++;
     }
 }
 
 //Se encarga de interpretar caractere de movimiento de cursor. Realizar un salto de
 // linea, borrar y realizar una tabulacion.
-static int parseSpecialCharacter(char c, unsigned int background){
-    switch(c){
-        case '\n':
-            enter(background);
-            break;
+static int parseSpecialCharacter(char c, unsigned int background)
+{
+    switch (c)
+    {
+    case '\n':
+        enter(background);
+        break;
 
-        case '\b':
-            backspace(background);
-            break;
+    case '\b':
+        backspace(background);
+        break;
 
-        case '\t':
-            break;
+    case '\t':
+        break;
 
-        default:
-            return 0;
+    default:
+        return 0;
     }
     return 1;
 }
