@@ -5,9 +5,12 @@
 #include <music.h>
 
 //constantes para la definicion de arrays
-#define USER_INPUT_SIZE 15
+#define SHELL_MESSAGE "Fleshy: $>"
+#define USER_INPUT_SIZE getScreenWidth()/2 - strlen(SHELL_MESSAGE)
 #define MAX_FUNCTIONS 20
 #define MAX_ARGUMENTS_SIZE 5
+#define SHELL 0
+#define CALCULATOR 1
 
 #define END_OF_EXECUTION_KEY 27
 #define GAME_RETURNING_KEY '\t'
@@ -25,6 +28,8 @@
     functionPackage functions[MAX_FUNCTIONS];
     //Cantidad de funciones disponibles
     int functionsSize = 0;
+
+    int currentShell = SHELL;
 
     int cursorTick = 0;
 
@@ -94,16 +99,26 @@ void startShell(){
     clearScreen();
     setCursorPos(0,getScreenHeight() - 1);
     char userInput[USER_INPUT_SIZE];
-    printf("Bienvenido a shell, estas son las funciones disponibles: \n", 0x5CFEE4, 0);
-    help(0,0);
-    printf("Fleshy: $>", 0x5CFEE4, 0);
+    
+    for(int i=0; i < verticalPixelCount(); i++){
+        drawPixel(horizontalPixelCount()/2, i, 0x2b66cc);
+    }
 
     //Se espera hasta que se reciba un enter y luego, se procesa el texto ingresado.
     //Si coincide con el nombre de una funcion se la ejecuta, sino se vuelve a modo lectura.
     while(readUserInput(userInput,USER_INPUT_SIZE)){
-        processInstruction(userInput);
-        setCursorPos(0,getScreenHeight() - 1);
-        printf("Fleshy: $>", 0x5CFEE4, 0);
+
+        if(currentShell == SHELL){
+            processInstruction(userInput);
+            printf("Fleshy: $>", 0x5CFEE4, 0);
+        }else{
+            printf("Calc: $>", 0x5CFEE4, 0);
+        }
+        
+        for(int i=0; i < verticalPixelCount(); i++){
+            drawPixel(horizontalPixelCount()/2, i, 0x2b66cc);
+        }
+        
     }
 }
 
@@ -141,8 +156,17 @@ static int readUserInput(char * buffer, int maxSize){
                 }
             }
 
-            if( c == '\t')
-                c = ' ';
+            if( c == '\t'){
+                if(currentShell == SHELL){
+                    currentShell = CALCULATOR;
+                    setCursorPos(getScreenWidth()/2,getScreenHeight() - 1);
+                    printint(currentShell);
+                }else{
+                    currentShell = SHELL;
+                    setCursorPos(0,getScreenHeight() - 1);
+                    printint(currentShell);
+                }
+            }
 
             if( c != '\b'){
                 putchar(c);

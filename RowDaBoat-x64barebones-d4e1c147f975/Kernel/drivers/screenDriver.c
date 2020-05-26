@@ -60,7 +60,6 @@ static int parseSpecialCharacter(char c, unsigned int background){
             break;
 
         case '\t':
-            tab();
             break;
 
         default:
@@ -132,11 +131,4 @@ static void backspace(unsigned int background){
         drawChar((cursorPosX-1)*CHAR_WIDTH, cursorPosY*CHAR_HEIGHT, ' ', 0, background);
         setCursorPos(cursorPosX-1, cursorPosY);
     }
-}
-
-static void tab(){
-    if(cursorPosX + 4 >= screenWidth)
-        setCursorPos(screenWidth-1, cursorPosY);
-    else
-        setCursorPos(cursorPosX+4, cursorPosY);
 }
