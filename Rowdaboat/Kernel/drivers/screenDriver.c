@@ -113,7 +113,7 @@ int getScreenId(int cursorX)
 int getXInitialPos(int cursorX)
 {
     int screenId = getScreenId(cursorPosX);
-    return screenId == 0 ? 0 : screenWidth / 2 + 1;
+    return screenId == 0 ? 0 : screenWidth / 2;
 }
 
 //Cuando se esta escribiendo en la ultima linea de la pantalla y se quiere pasar a la proxima
