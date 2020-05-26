@@ -10,7 +10,8 @@ static void backspace(unsigned int background);
 static void enter(unsigned int background);
 static void tab();
 static void scrollDownOnce(unsigned int background);
-
+static int getXInitialPos(int cursorX);
+static int getScreenId(int cursorX);
 void putchar(char c)
 {
     putcharf(c, DEFAULT_FONT_COLOR, DEFAULT_BACKGROUND_COLOR);
@@ -100,7 +101,7 @@ void printStringf(char *string, unsigned int font, unsigned int background)
 
 int getScreenId(int cursorX)
 {
-    if (cursorX > 0 && cursorX < screenWidth / 2)
+    if (cursorX >= 0 && cursorX < screenWidth / 2)
     {
         return 0; //calculator
     }
