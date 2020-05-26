@@ -53,24 +53,21 @@ void putcharf(char c, unsigned int font, unsigned int background)
 
 //Se encarga de interpretar caractere de movimiento de cursor. Realizar un salto de
 // linea, borrar y realizar una tabulacion.
-static int parseSpecialCharacter(char c, unsigned int background)
-{
-    switch (c)
-    {
-    case '\n':
-        enter(background);
-        break;
+static int parseSpecialCharacter(char c, unsigned int background){
+    switch(c){
+        case '\n':
+            enter(background);
+            break;
 
-    case '\b':
-        backspace(background);
-        break;
+        case '\b':
+            backspace(background);
+            break;
 
-    case '\t':
-        tab();
-        break;
+        case '\t':
+            break;
 
-    default:
-        return 0;
+        default:
+            return 0;
     }
     return 1;
 }
@@ -179,12 +176,4 @@ static void backspace(unsigned int background)
         drawChar((cursorPosX - 1) * CHAR_WIDTH, cursorPosY * CHAR_HEIGHT, ' ', 0, background);
         setCursorPos(cursorPosX - 1, cursorPosY);
     }
-}
-
-static void tab()
-{
-    if (cursorPosX + 4 >= screenWidth)
-        setCursorPos(screenWidth - 1, cursorPosY);
-    else
-        setCursorPos(cursorPosX + 4, cursorPosY);
 }
