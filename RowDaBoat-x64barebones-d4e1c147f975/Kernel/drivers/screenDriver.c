@@ -100,13 +100,13 @@ void printStringf(char *string, unsigned int font, unsigned int background)
 
 int getScreenId(int cursorX)
 {
-    if (cursorX >= 0 && cursorX < screenWidth / 2)
+    if (cursorX >= 0 && cursorX <= screenWidth / 2 - 1)
     {
-        return 0; //calculator
+        return 0; 
     }
     else
     {
-        return 1; //command shell
+        return 1; 
     }
 }
 
@@ -123,15 +123,16 @@ int getXInitialPos(int cursorX)
 static void scrollDownOnce(unsigned int background)
 {
     int screenId = getScreenId(cursorPosX);
-    int xLimit = screenId == 0 ? screenWidth / 2 : screenWidth;
+    int xLimit = screenId == 0 ? horPixelCount() / 2 : horPixelCount();
+    int x = getXInitialPos(cursorPosX);
     for (int j = 0; j < verPixelCount() - CHAR_HEIGHT; j++)
     {
-        for (int i = 0; i < xLimit; i++)
+        for (int i = x; i < xLimit; i++)
         {
             copyPixel(i, j + CHAR_HEIGHT, i, j);
         }
     }
-    int x = getXInitialPos(cursorPosX);
+    
     setCursorPos(x, screenHeight - 1);
     for (int i = x; i < screenWidth / 2; i++)
     {
