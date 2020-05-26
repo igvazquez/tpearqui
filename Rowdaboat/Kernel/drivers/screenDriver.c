@@ -102,11 +102,11 @@ int getScreenId(int cursorX)
 {
     if (cursorX >= 0 && cursorX <= screenWidth / 2 - 1)
     {
-        return 0; 
+        return 0;
     }
     else
     {
-        return 1; 
+        return 1;
     }
 }
 
@@ -132,9 +132,10 @@ static void scrollDownOnce(unsigned int background)
             copyPixel(i, j + CHAR_HEIGHT, i, j);
         }
     }
-    
+
     setCursorPos(x, screenHeight - 1);
-    for (int i = x; i < screenWidth / 2; i++)
+
+    for (int i = x; i < xLimit / CHAR_WIDTH; i++)
     {
         putcharf(' ', 0, background);
     }
