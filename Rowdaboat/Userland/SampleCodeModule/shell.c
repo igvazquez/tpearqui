@@ -113,8 +113,8 @@ void startShell()
     char shellBuffer[USER_INPUT_SIZE];
     char calcBuffer[USER_INPUT_SIZE];
 
-    userInput[0] = shellBuffer;
-    userInput[1] = calcBuffer;
+    userInput[SHELL] = shellBuffer;
+    userInput[CALCULATOR] = calcBuffer;
 
     for (int i = 0; i < verticalPixelCount(); i++)
     {
@@ -134,7 +134,7 @@ void startShell()
     {
 
         if (currentShell == SHELL && pendingInstruction)
-        {
+        {         
             processInstruction(userInput[SHELL]);
             printf(SHELL_MESSAGE, 0x5CFEE4, 0);
         }
@@ -248,8 +248,12 @@ static int readUserInput(char **buffer, int maxSize)
 //Funcion encargada de procesar el texto recibido. Se guardan los argumentos en un array
 // y se verifica si el texto ingresado valida con el nombre de una funcion para asi llamarla.
 static void processInstruction(char *instruction)
-{
+{   
     char *arguments[MAX_ARGUMENTS_SIZE];
+    if (*instruction == '\0')
+    {
+        return;
+    }   
     int argCount = strtok(instruction, ' ', arguments, MAX_ARGUMENTS_SIZE);
     for (int i = 0; i < functionsSize; i++)
     {
