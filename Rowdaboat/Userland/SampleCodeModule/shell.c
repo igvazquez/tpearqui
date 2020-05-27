@@ -78,9 +78,6 @@ static void help(int argcount, char *args[]);
 static void triggerException0(int argcount, char *args[]);
 static void triggerException6(int argcount, char *args[]);
 
-//arkanoid: juego arkanoid. Partida nueva o continuada.
-static void arkanoid(int argcount, char *args[]);
-
 //Modulos adicionales
 
 //ticksElpased: funcion demostrativa de la syscall 0.
@@ -90,18 +87,6 @@ static void ticksElpased(int argcount, char *args[]);
 //printArgs: funcion demostrativa del parseado de argumentos.
 // Imprime todos los argumentos que recibe.
 static void printArgs(int argcount, char *args[]);
-
-//beep: emite un sonido breve.
-static void playSound(int argcount, char *args[]);
-
-//canciones disponibles.
-static void playLavander(int argcount, char *args[]);
-static void playForElisa(int argcount, char *args[]);
-static void playDefeat(int argcount, char *args[]);
-static void playSadness(int argcount, char *args[]);
-static void playVictory(int argcount, char *args[]);
-static void playEvangelion(int argcount, char *args[]);
-//End
 
 void startShell()
 {
