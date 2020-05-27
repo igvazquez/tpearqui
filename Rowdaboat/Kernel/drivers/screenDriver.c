@@ -11,6 +11,7 @@ static void enter(unsigned int background);
 static void scrollDownOnce(unsigned int background);
 static int getXInitialPos(int cursorX);
 static int getScreenId(int cursorX);
+
 void putchar(char c)
 {
     putcharf(c, DEFAULT_FONT_COLOR, DEFAULT_BACKGROUND_COLOR);
@@ -43,12 +44,17 @@ void putcharf(char c, unsigned int font, unsigned int background)
     drawChar(cursorPosX * CHAR_WIDTH, cursorPosY * CHAR_HEIGHT, c, font, background);
 
     cursorPosX++;
-    int screenId = getScreenId(cursorPosX);
-    if ((screenId == 0 && cursorPosX >= (screenWidth / 2)) || (screenId == 1 && cursorPosX >= screenWidth))
+    if (cursorPosX == screenWidth/2)
     {
-        cursorPosX = getXInitialPos(cursorPosX);
+        cursorPosX = 0;
         cursorPosY++;
     }
+    else if (cursorPosX >= screenWidth)
+    {
+        cursorPosX = screenWidth/2 + 1;
+        cursorPosY++;
+    }
+    
 }
 
 //Se encarga de interpretar caractere de movimiento de cursor. Realizar un salto de

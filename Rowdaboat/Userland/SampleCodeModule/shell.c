@@ -281,14 +281,6 @@ static void loadFunctions()
     loadFunction("printmem", &printmem, "Makes a 32 Bytes memory dump to screen from the address passed by argument.\nAddress in hexadecimal and 0 is not valid.\n");
     loadFunction("triggerException0", &triggerException0, "Triggers Exception number 0 \n");
     loadFunction("triggerException6", &triggerException6, "Triggers Exception number 6 \n");
-    loadFunction("arkanoid", &arkanoid, "Arkanoid Game! Args: No args for new game. -c to continue last game.\n");
-    loadFunction("beep", &playSound, "Plays a beep \n");
-    loadFunction("Lavander", &playLavander, "Plays an indie game's music");
-    loadFunction("Elisa", &playForElisa, "Music for a student\n");
-    loadFunction("Evangelion", &playEvangelion, "Evangelion theme\n");
-    loadFunction("SadMusic", &playSadness, "Music to listen when you are sad");
-    loadFunction("Victory", &playVictory, "Music to listen when you win");
-    loadFunction("Defeat", &playDefeat, "Music to listen when you are happyn't");
 }
 
 static void loadFunction(char *string, void (*fn)(), char *desc)
@@ -459,49 +451,4 @@ static void triggerException0(int argcount, char *args[])
 static void triggerException6(int argcount, char *args[])
 {
     __asm__("ud2"); //https://mudongliang.github.io/x86/html/file_module_x86_id_318.html
-}
-
-static void playSound(int argcount, char *args[])
-{
-    sysBeep(A, 5);
-}
-
-static void arkanoid(int argcount, char *args[])
-{
-    if (argcount == 0)
-        startArkanoid(NEW_GAME);
-    else if (strcmp(args[0], "-c"))
-        startArkanoid(CONTINUE);
-    else
-        println("Wrong Arguments");
-}
-
-static void playLavander(int argcount, char *args[])
-{
-    Lavander();
-}
-
-static void playVictory(int argcount, char *args[])
-{
-    Victory();
-}
-
-static void playForElisa(int argcount, char *args[])
-{
-    forElisa();
-}
-
-static void playEvangelion(int argcount, char *args[])
-{
-    Evangelion();
-}
-
-static void playSadness(int argcount, char *args[])
-{
-    Sadness();
-}
-
-static void playDefeat(int argcount, char *args[])
-{
-    Defeat();
 }
