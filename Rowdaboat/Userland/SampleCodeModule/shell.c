@@ -1,6 +1,7 @@
 //shell.c
 #include <shell.h>
 #include <usrlib.h>
+#include <expTree.h>
 
 //constantes para la definicion de arrays
 #define SHELL_MESSAGE "Shell: $>"
@@ -11,7 +12,7 @@
 #define CALCULATOR 1
 #define SHELLS 2
 #define OPERATORS 7
-#define VALID_CHARS_CALC 17
+#define VALID_CHARS_CALC 18
 
 #define END_OF_EXECUTION_KEY 27
 #define CURSOR_COLOR 0x00FF00
@@ -35,7 +36,7 @@ int shellIndex = 0;
 int calcIndex = 0;
 int pendingInstruction = 0;
 char ops[OPERATORS] = {'+', '-', '*', '%', '(', ')', ' '};
-char validChars[VALID_CHARS_CALC] = {'+', '-', '*', '%', '(', ')', ' ', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+char validChars[VALID_CHARS_CALC] = {'.', '+', '-', '*', '%', '(', ')', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
 int cursorTick = 0;
 
@@ -48,7 +49,7 @@ static void loadFunction(char *string, void (*fn)(), char *desc);
 //Funciones utilizadas para la operacion de la shell.
 static int readUserInput(char **buffer, int maxSize);
 static void processInstruction(char *userInput);
-// static void processCalculation(char *userInput);
+static void processCalculation(char *userInput);
 
 //Funciones auxiliares para tener un cursor parpadeante.
 static void tickCursor();
@@ -91,7 +92,7 @@ void startShell()
     loadFunctions();
     clearScreen();
     setCursorPos(0, getScreenHeight() - 1);
-    char * userInput[SHELLS];
+    char *userInput[SHELLS];
     char shellBuffer[USER_INPUT_SIZE];
     char calcBuffer[USER_INPUT_SIZE];
 
@@ -116,16 +117,17 @@ void startShell()
     {
 
         if (currentShell == SHELL && pendingInstruction)
-        {         
+        {
             processInstruction(userInput[SHELL]);
             printf(SHELL_MESSAGE, 0x5CFEE4, 0);
         }
         else if (pendingInstruction)
         {
+            processCalculation(userInput[CALCULATOR]);
             printf(SHELL_MESSAGE, 0x5CFEE4, 0);
         }
         pendingInstruction = 0;
-        
+
         for (int i = 0; i < verticalPixelCount(); i++)
         {
             drawPixel(horizontalPixelCount() / 2, i, 0x2b66cc);
@@ -167,14 +169,14 @@ static int readUserInput(char **buffer, int maxSize)
                     currentShell = CALCULATOR;
                     setCursorPos(getScreenWidth() / 2 + 1, getScreenHeight() - 1);
                     printf(SHELL_MESSAGE, 0x5CFEE4, 0);
-                    setCursorPos(getScreenWidth()/2 + strlen(SHELL_MESSAGE) + calcIndex + 1, getScreenHeight() - 1);
+                    setCursorPos(getScreenWidth() / 2 + strlen(SHELL_MESSAGE) + calcIndex + 1, getScreenHeight() - 1);
                 }
                 else if (currentShell == CALCULATOR)
                 {
                     currentShell = SHELL;
                     setCursorPos(0, getScreenHeight() - 1);
                     printf(SHELL_MESSAGE, 0x5CFEE4, 0);
-                    setCursorPos(strlen(SHELL_MESSAGE) + shellIndex, getScreenHeight() - 1); 
+                    setCursorPos(strlen(SHELL_MESSAGE) + shellIndex, getScreenHeight() - 1);
                 }
             }
             else if (c != '\b')
@@ -183,7 +185,8 @@ static int readUserInput(char **buffer, int maxSize)
                 {
                     putchar(c);
                     buffer[SHELL][shellIndex++] = c;
-                }else if(currentShell == CALCULATOR)
+                }
+                else if (currentShell == CALCULATOR)
                 {
                     for (int i = 0; i < VALID_CHARS_CALC; i++)
                     {
@@ -213,7 +216,8 @@ static int readUserInput(char **buffer, int maxSize)
     {
         buffer[currentShell][shellIndex++] = '\0';
         shellIndex = 0;
-    }else
+    }
+    else
     {
         buffer[currentShell][calcIndex++] = '\0';
         calcIndex = 0;
@@ -223,19 +227,20 @@ static int readUserInput(char **buffer, int maxSize)
     return 1;
 }
 
-// static void processCalculation(char *userInput)
-// {
-// }
+static void processCalculation(char *userInput)
+{
+    calculate(userInput);
+}
 
 //Funcion encargada de procesar el texto recibido. Se guardan los argumentos en un array
 // y se verifica si el texto ingresado valida con el nombre de una funcion para asi llamarla.
 static void processInstruction(char *instruction)
-{   
+{
     char *arguments[MAX_ARGUMENTS_SIZE];
     if (*instruction == '\0')
     {
         return;
-    }   
+    }
     int argCount = strtok(instruction, ' ', arguments, MAX_ARGUMENTS_SIZE);
     for (int i = 0; i < functionsSize; i++)
     {

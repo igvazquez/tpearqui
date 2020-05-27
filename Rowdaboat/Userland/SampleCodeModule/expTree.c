@@ -1,143 +1,289 @@
-// #include <expTree.h>
-// #include <usrlib.h>
+#include <expTree.h>
+#include <usrlib.h>
 
-// #define NULL 0
-// static bool isOperator(char c);
-// static double getNumber(char *exp);
-// static double operate(Node *node);
+#define NULL 0
+#define TRUE 1
+#define FALSE 0
+#define MAX_NODES 30
 
-// static bool isOperator(char c)
-// {
-//     if (c == '+' || c == '-' ||
-//         c == 'x' ||
-//         c == '%')
-//         return true;
-//     return false;
-// }
+static int isOperator(char c);
 
-// double calculate(char *exp)
-// {
-//     Node *root = buildExpression(exp);
-//     return operate(root);
-// }
+static int getNumber(char *exp, char *buffer);
+static void operate(struct Node *node, float *num);
+static struct Node *buildExpression(char *exp);
+static struct Node *buildExpressionRec(char *exp, int *counter);
+static void strToFloat(char *s, float *num);
+void ftoa(double n, char *res, int afterpoint);
+int intToStr(int x, char str[], int d);
+void reverse(char *str, int len);
 
-// static Node *buildExpression(char *exp)
-// {
-//     Node *auxi = new Node();
+struct Node nodes[MAX_NODES];
+int node_count = 0;
 
-//     if (*exp != '\0')
-//     {
+static int isOperator(char c)
+{
+    if (c == '+' || c == '-' ||
+        c == '*' ||
+        c == '%')
+        return TRUE;
+    return FALSE;
+}
 
-//         if (*exp == "(")
-//         {
-//             exp++;
-//             auxi->left = buildExpression(exp++);
+void calculate(char *exp)
+{
 
-//             if (isOperator(*exp++))
-//             {
-//                 auxi->value = *exp;
-//             }
-//             else
-//             {
-//                 print("2.Bad expression\n");
-//             }
-//             auxi->right = buildExpression(exp++);
-//             if (*exp == ")")
-//             {
-//                 exp++;
-//             }
-//             else
-//             {
-//                 print("3.Bad expression\n");
-//             }
-//         }
-//         else
-//         {
-//             double number = getNumber(exp);
-//             auxi->value = number;
-//             auxi->left = auxi->right = NULL;
-//         }
-//         else
-//         {
-//             print("4.Bad expression\n");
-//         }
-//     }
-//     return auxi;
-// }
+    struct Node *root = buildExpression(exp);
+    if (root == NULL)
+    {
+        print("La expresion: ");
+        print(exp);
+        println(" es invalida. Por favor intente de nuevo.");
+    }
+    else
+    {
 
-// static double getNumber(char *exp)
-// {
-//     double num = 0;
-//     bool decimal = false;
+        float res = 0;
+        operate(root, &res);
+        char str[NUMBER_LENGTH];
+        ftoa(res, str, 4);
+        print(exp);
+        print(" = ");
+        println(str);
+    }
+}
 
-//     int multDec = 10;
-//     char c;
-//     while ((c = *exp) >= '0' && c <= '9' || c == '.' || c == ',')
-//     {
+static struct Node *buildExpression(char *exp)
+{
+    int counter = 0;
+    return buildExpressionRec(exp, &counter);
+}
 
-//         if (c >= '0' && c <= '9')
-//         {
-//             if (!decimal)
-//             {
-//                 num *= 10;
-//                 num += c - '0';
-//             }
-//             else
-//             {
-//                 int dec = (c - '0') / multDec;
-//                 multDec *= 10;
-//                 num += dec;
-//             }
-//         }
-//         else
-//         {
-//             if (c == '.' || c == ',')
-//             {
-//                 if (decimal)
-//                 {
-//                     printf("5. Bad expression");
-//                 }
-//                 else
-//                 {
-//                     decimal = true;
-//                 }
-//             }
-//         }
-//     }
-//     if (c != ')' && !isOperator(c))
-//     {
-//         printf("6. Bad expression");
-//         return -1;
-//     }
+static struct Node *buildExpressionRec(char *exp, int *counter)
+{
 
-//     return num;
-// }
+    struct Node *auxi = NULL;
+    if (node_count <= MAX_NODES)
+    {
+        auxi = &nodes[node_count++];
+    }
+    else
+    {
+        print("Expresion is too long");
+        return NULL;
+    }
 
-// static double operate(Node *node)
-// {
-//     if (node->left == NULL || node->right == NULL)
-//     {
-//         return node->data;
-//     }
+    if (exp[*counter] != '\0')
+    {
 
-//     char op = node->data;
-//     double res = NULL;
-//     double left = operate(node->left);
-//     double right = operate(node->right);
-//     switch (op)
-//     {
-//     case "+":
-//         res = left + right;
-//         break;
-//     case "-":
-//         res = left - right;
-//         break;
-//     case "x":
-//         res = left * right;
-//         break;
-//     case "%":
-//         res = left / right;
-//         break;
-//     }
-//     return res;
-// }
+        if (exp[*counter] == '(')
+        {
+            *counter = *counter + 1;
+            struct Node *left = buildExpressionRec(exp, counter);
+            if (left == NULL)
+            {
+
+                return NULL;
+            }
+            auxi->left = left;
+
+            if (isOperator(exp[*counter]))
+            {
+
+                (auxi->value)[0] = exp[*counter];
+                (auxi->value)[1] = '\0';
+                *counter = *counter + 1;
+            }
+            else
+            {
+                putchar(exp[*counter]);
+
+                return NULL;
+            }
+            struct Node *right = buildExpressionRec(exp, counter);
+            if (right == NULL)
+            {
+
+                return NULL;
+            }
+            auxi->right = right;
+
+            if (exp[*counter] == ')')
+            {
+                *counter = *counter + 1;
+            }
+            else
+            {
+
+                return NULL;
+            }
+        }
+        else
+        {
+
+            if (getNumber(exp + *counter, auxi->value) == FALSE)
+            {
+
+                return NULL;
+            };
+
+            *counter = *counter + (strlen(auxi->value));
+
+            auxi->left = auxi->right = NULL;
+        }
+    }
+    return auxi;
+}
+
+static int getNumber(char *exp, char *buffer)
+{
+
+    int decimal = FALSE;
+    int ok = TRUE;
+    int i = 0;
+    char c;
+    while (ok == TRUE && i <= NUMBER_LENGTH && (((c = *exp++) >= '0' && c <= '9') || c == '.'))
+    {
+
+        if (c == '.' || c == ',')
+        {
+            if (decimal == 1)
+            {
+                ok = 0;
+            }
+            else
+            {
+                buffer[i++] = c;
+                decimal = TRUE;
+            }
+        }
+        else
+        {
+
+            buffer[i++] = c;
+        }
+    }
+    if ((c != ')' && isOperator(c) != TRUE) || i > NUMBER_LENGTH)
+    {
+
+        ok = FALSE;
+    }
+    else
+    {
+        buffer[i] = '\0';
+    }
+
+    return ok;
+}
+
+static void strToFloat(char *s, float *num)
+{
+
+    int decimal = FALSE;
+    int multDec = 10;
+    while (*s != '\0')
+    {
+
+        if (*s == '.')
+        {
+            decimal = TRUE;
+            s++;
+        }
+        else if (decimal == FALSE)
+        {
+            *num = *num * 10;
+            *num = *num + *s - '0';
+            s++;
+        }
+        else
+        {
+            float dec = *s - '0';
+
+            *num = *num + dec / multDec;
+            multDec *= 10;
+            s++;
+        }
+    }
+}
+
+void reverse(char *str, int len)
+{
+    int i = 0, j = len - 1, temp;
+    while (i < j)
+    {
+        temp = str[i];
+        str[i] = str[j];
+        str[j] = temp;
+        i++;
+        j--;
+    }
+}
+
+int intToStr(int x, char str[], int d)
+{
+    int i = 0;
+    while (x)
+    {
+        str[i++] = (x % 10) + '0';
+        x = x / 10;
+    }
+    while (i < d)
+        str[i++] = '0';
+    reverse(str, i);
+    str[i] = '\0';
+    return i;
+}
+
+void ftoa(double n, char *res, int afterpoint)
+{
+
+    int ipart = (int)n;
+
+    double fpart = n - (float)ipart;
+
+    int i = intToStr(ipart, res, 0);
+
+    if (afterpoint != 0)
+    {
+        res[i] = '.'; // add dot
+
+        while (afterpoint > 0)
+        {
+            fpart = fpart * 10;
+            afterpoint--;
+        }
+
+        intToStr((int)fpart, res + i + 1, afterpoint);
+    }
+}
+
+static void operate(struct Node *node, float *res)
+{
+    if (node->left == NULL || node->right == NULL)
+    {
+
+        strToFloat(node->value, res);
+    }
+    else
+    {
+        char op = (node->value)[0];
+
+        float left, right;
+        operate(node->left, &left);
+        operate(node->right, &right);
+        switch (op)
+        {
+        case '+':
+            *res = left + right;
+            break;
+        case '-':
+            *res = left - right;
+            break;
+        case '*':
+            *res = left * right;
+            break;
+        case '%':
+            *res = left / right;
+            break;
+        }
+    }
+}
