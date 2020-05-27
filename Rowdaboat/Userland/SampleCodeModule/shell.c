@@ -6,12 +6,14 @@
 
 //constantes para la definicion de arrays
 #define SHELL_MESSAGE "Shell: $>"
-#define USER_INPUT_SIZE getScreenWidth() / 2 - strlen(SHELL_MESSAGE) - 1
+#define USER_INPUT_SIZE 30
 #define MAX_FUNCTIONS 20
 #define MAX_ARGUMENTS_SIZE 5
 #define SHELL 0
 #define CALCULATOR 1
 #define SHELLS 2
+#define OPERATORS 7
+#define VALID_CHARS_CALC 17
 
 #define END_OF_EXECUTION_KEY 27
 #define GAME_RETURNING_KEY '\t'
@@ -32,6 +34,11 @@ functionPackage functions[MAX_FUNCTIONS];
 int functionsSize = 0;
 
 int currentShell = SHELL;
+int shellIndex = 0;
+int calcIndex = 0;
+int pendingInstruction = 0;
+char ops[OPERATORS] = {'+', '-', '*', '%', '(', ')', ' '};
+char validChars[VALID_CHARS_CALC] = {'+', '-', '*', '%', '(', ')', ' ', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
 int cursorTick = 0;
 
@@ -42,12 +49,12 @@ static void loadFunctions();
 static void loadFunction(char *string, void (*fn)(), char *desc);
 
 //Funciones utilizadas para la operacion de la shell.
-static int readUserInput(char *buffer, int maxSize);
+static int readUserInput(char **buffer, int maxSize);
 static void processInstruction(char *userInput);
-static void processCalculation(char *userInput)
+// static void processCalculation(char *userInput);
 
-    //Funciones auxiliares para tener un cursor parpadeante.
-    static void tickCursor();
+//Funciones auxiliares para tener un cursor parpadeante.
+static void tickCursor();
 static void turnOffCursor();
 
 //Modulos - Funciones ejecutables desde la shell
@@ -102,11 +109,18 @@ void startShell()
     loadFunctions();
     clearScreen();
     setCursorPos(0, getScreenHeight() - 1);
-    char userInput[SHELLS][USER_INPUT_SIZE];
+    char * userInput[SHELLS];
+    char shellBuffer[USER_INPUT_SIZE];
+    char calcBuffer[USER_INPUT_SIZE];
+
+    userInput[0] = shellBuffer;
+    userInput[1] = calcBuffer;
 
     for (int i = 0; i < verticalPixelCount(); i++)
     {
         drawPixel(horizontalPixelCount() / 2, i, 0x2b66cc);
+        drawPixel(horizontalPixelCount() / 2 + 1, i, 0x2b66cc);
+        drawPixel(horizontalPixelCount() / 2 + 2, i, 0x2b66cc);
     }
 
     setCursorPos(getScreenWidth() / 2 + 1, getScreenHeight() - 1);
@@ -116,20 +130,20 @@ void startShell()
 
     //Se espera hasta que se reciba un enter y luego, se procesa el texto ingresado.
     //Si coincide con el nombre de una funcion se la ejecuta, sino se vuelve a modo lectura.
-    while (readUserInput(userInput[currentShell], USER_INPUT_SIZE))
+    while (readUserInput(userInput, USER_INPUT_SIZE))
     {
 
-        if (currentShell == SHELL)
+        if (currentShell == SHELL && pendingInstruction)
         {
             processInstruction(userInput[SHELL]);
             printf(SHELL_MESSAGE, 0x5CFEE4, 0);
         }
-        else
+        else if (pendingInstruction)
         {
-            //processcalc
             printf(SHELL_MESSAGE, 0x5CFEE4, 0);
         }
-
+        pendingInstruction = 0;
+        
         for (int i = 0; i < verticalPixelCount(); i++)
         {
             drawPixel(horizontalPixelCount() / 2, i, 0x2b66cc);
@@ -140,15 +154,13 @@ void startShell()
 //Funcion encargada de la lectura del texto ingresado por el usuario.
 //Se encarga de guardarlo en un buffer para luego ser procesado. Maneja borrado,
 // tecla especial para volver al juego y tecla especial para el corte de ejecucion.
-static int readUserInput(char *buffer, int maxSize)
+static int readUserInput(char **buffer, int maxSize)
 {
-
-    int counter = 0;
     char c;
     int currentTimerTick;
     int lastTimerTick = -1;
 
-    while ((counter < maxSize - 1) && (c = getChar()) != '\n')
+    while ((shellIndex < maxSize - 1) && (calcIndex < maxSize - 1) && (c = getChar()) != '\n')
     {
 
         //Parpadeo del cursor.
@@ -173,44 +185,72 @@ static int readUserInput(char *buffer, int maxSize)
                     currentShell = CALCULATOR;
                     setCursorPos(getScreenWidth() / 2 + 1, getScreenHeight() - 1);
                     printf(SHELL_MESSAGE, 0x5CFEE4, 0);
+                    setCursorPos(getScreenWidth()/2 + strlen(SHELL_MESSAGE) + calcIndex + 1, getScreenHeight() - 1);
                 }
-                else
+                else if (currentShell == CALCULATOR)
                 {
                     currentShell = SHELL;
                     setCursorPos(0, getScreenHeight() - 1);
                     printf(SHELL_MESSAGE, 0x5CFEE4, 0);
+                    setCursorPos(strlen(SHELL_MESSAGE) + shellIndex, getScreenHeight() - 1); 
                 }
             }
-
-            if (c != '\b')
+            else if (c != '\b')
             {
-                putchar(c);
-                buffer[counter++] = c;
+                if (currentShell == SHELL)
+                {
+                    putchar(c);
+                    buffer[SHELL][shellIndex++] = c;
+                }else if(currentShell == CALCULATOR)
+                {
+                    for (int i = 0; i < VALID_CHARS_CALC; i++)
+                    {
+                        if (c == validChars[i])
+                        {
+                            putchar(c);
+                            buffer[CALCULATOR][calcIndex++] = c;
+                        }
+                    }
+                }
             }
-            else if (counter > 0)
+            else if (currentShell == SHELL && shellIndex > 0 && c == '\b')
             {
                 putchar('\b');
-                counter--;
+                shellIndex--;
+            }
+            else if (currentShell == CALCULATOR && calcIndex > 0 && c == '\b')
+            {
+                putchar('\b');
+                calcIndex--;
             }
         }
     }
-    turnOffCursor();
-    buffer[counter++] = '\0';
-    putchar('\n');
 
+    turnOffCursor();
+    if (currentShell == SHELL)
+    {
+        buffer[currentShell][shellIndex++] = '\0';
+        shellIndex = 0;
+    }else
+    {
+        buffer[currentShell][calcIndex++] = '\0';
+        calcIndex = 0;
+    }
+    pendingInstruction = 1;
+    putchar('\n');
     return 1;
 }
 
-static void processCalculation(char *userInput)
-{
-}
+// static void processCalculation(char *userInput)
+// {
+// }
 
 //Funcion encargada de procesar el texto recibido. Se guardan los argumentos en un array
 // y se verifica si el texto ingresado valida con el nombre de una funcion para asi llamarla.
-static void processInstruction(char *userInput)
+static void processInstruction(char *instruction)
 {
     char *arguments[MAX_ARGUMENTS_SIZE];
-    int argCount = strtok(userInput, ' ', arguments, MAX_ARGUMENTS_SIZE);
+    int argCount = strtok(instruction, ' ', arguments, MAX_ARGUMENTS_SIZE);
     for (int i = 0; i < functionsSize; i++)
     {
         if (strcmp(arguments[0], functions[i].name))
@@ -219,9 +259,9 @@ static void processInstruction(char *userInput)
             return;
         }
     }
-    if (*userInput != 0)
+    if (*instruction != 0)
     {
-        print(userInput);
+        print(instruction);
         println(" not found");
     }
 }
