@@ -7,10 +7,11 @@
 #define MAX_NODES 30
 
 static int isOperator(char c);
-static int isNumber(char *exp);
-static void getNumber(char *exp, char *buffer);
+
+static int getNumber(char *exp, char *buffer);
 static int operate(struct Node *node);
 static struct Node *buildExpression(char *exp);
+static struct Node *buildExpressionRec(char *exp, int *counter);
 
 struct Node nodes[MAX_NODES];
 int node_count = 0;
@@ -26,25 +27,31 @@ static int isOperator(char c)
 
 void calculate(char *exp)
 {
-    struct Node *root = buildExpression(&exp);
+    struct Node *root = buildExpression(exp);
     if (root == NULL)
     {
-        println("Error: expresión inválida.");
+        println(exp);
+        println("Error: expresion invalida.");
     }
     else
     {
-        int res = operate(root);
-        printint(res);
-        putchar('\n');
+        println(exp);
+        println("expresion valida");
     }
 }
 
-static struct Node *buildExpression(char **exp)
+static struct Node *buildExpression(char *exp)
+{
+    int counter = 0;
+    return buildExpressionRec(exp, &counter);
+}
+
+static struct Node *buildExpressionRec(char *exp, int *counter)
 {
     struct Node *auxi = NULL;
     if (node_count <= MAX_NODES)
     {
-        auxi = nodes[node_count++];
+        auxi = &nodes[node_count++];
     }
     else
     {
@@ -52,37 +59,40 @@ static struct Node *buildExpression(char **exp)
         return NULL;
     }
 
-    if (**exp != '\0')
+    if (exp[*counter] != '\0')
     {
 
-        if (**exp == '(')
+        if (exp[*counter] == '(')
         {
-            *exp++;
-            struct Node *left = buildExpression(exp);
+            *counter = *counter + 1;
+            struct Node *left = buildExpressionRec(exp, counter);
             if (left == NULL)
             {
                 return NULL;
             }
             auxi->left = left;
 
-            if (isOperator(*exp++))
+            if (isOperator(exp[*counter]))
             {
-                auxi->value = *exp;
+
+                (auxi->value)[0] = exp[*counter];
+                (auxi->value)[1] = '\0';
+                *counter = *counter + 1;
             }
             else
             {
                 return NULL;
             }
-            struct Node *right = buildExpression(exp);
+            struct Node *right = buildExpressionRec(exp, counter);
             if (right == NULL)
             {
                 return NULL;
             }
             auxi->right = right;
 
-            if (**exp == ')')
+            if (exp[*counter] == ')')
             {
-                *exp++;
+                *counter = *counter + 1;
             }
             else
             {
@@ -92,11 +102,11 @@ static struct Node *buildExpression(char **exp)
         else
         {
 
-            if (getNumber(*exp, auxi->value) == FALSE)
+            if (getNumber(exp, auxi->value) == FALSE)
             {
                 return NULL;
             };
-            *exp += (strlen(auxi->value));
+            *counter = *counter + (strlen(auxi->value));
             auxi->left = auxi->right = NULL;
         }
     }
@@ -110,7 +120,7 @@ static int getNumber(char *exp, char *buffer)
     int ok = TRUE;
     int i = 0;
     char c;
-    while (ok == TRUE && i <= NUMBER_LENGTH && ((c = *exp++) >= '0' && c <= '9') || c == '.' || c == ',')
+    while (ok == TRUE && i <= NUMBER_LENGTH && (((c = *exp++) >= '0' && c <= '9') || c == '.' || c == ','))
     {
 
         if (c == '.' || c == ',')
@@ -132,6 +142,7 @@ static int getNumber(char *exp, char *buffer)
     }
     if (c != ')' && isOperator(c) != TRUE)
     {
+        println("no es num");
         ok = FALSE;
     }
     else

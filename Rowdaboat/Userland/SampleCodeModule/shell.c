@@ -3,6 +3,7 @@
 #include <usrlib.h>
 #include <arkanoid.h>
 #include <music.h>
+#include <expTree.h>
 
 //constantes para la definicion de arrays
 #define SHELL_MESSAGE "Shell: $>"
@@ -203,8 +204,7 @@ static int readUserInput(char *buffer, int maxSize)
 
 static void processCalculation(char *userInput)
 {
-
-    println(userInput);
+    calculate(userInput);
 }
 
 //Funcion encargada de procesar el texto recibido. Se guardan los argumentos en un array

@@ -9,6 +9,6 @@ struct Node
     struct Node *left, *right;
 } typedef Node;
 
-void calculate(char *exp)
+void calculate(char *exp);
 
 #endif
