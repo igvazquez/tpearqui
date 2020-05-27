@@ -1,5 +1,5 @@
-#ifndef __EXPTREE_H__
-#define __EXPTREE_H__
+// #ifndef __EXPTREE_H__
+// #define __EXPTREE_H__
 
 #define NUMBER_LENGTH 30
 
@@ -11,4 +11,4 @@ struct Node
 
 void calculate(char *exp);
 
-#endif
+// #endif

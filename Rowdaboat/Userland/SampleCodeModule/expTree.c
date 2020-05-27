@@ -9,9 +9,13 @@
 static int isOperator(char c);
 
 static int getNumber(char *exp, char *buffer);
-static int operate(struct Node *node);
+static void operate(struct Node *node, float *num);
 static struct Node *buildExpression(char *exp);
 static struct Node *buildExpressionRec(char *exp, int *counter);
+static void strToFloat(char *s, float *num);
+void ftoa(double n, char *res, int afterpoint);
+int intToStr(int x, char str[], int d);
+void reverse(char *str, int len);
 
 struct Node nodes[MAX_NODES];
 int node_count = 0;
@@ -19,7 +23,7 @@ int node_count = 0;
 static int isOperator(char c)
 {
     if (c == '+' || c == '-' ||
-        c == 'x' ||
+        c == '*' ||
         c == '%')
         return TRUE;
     return FALSE;
@@ -27,16 +31,24 @@ static int isOperator(char c)
 
 void calculate(char *exp)
 {
+
     struct Node *root = buildExpression(exp);
     if (root == NULL)
     {
-        println(exp);
-        println("Error: expresion invalida.");
+        print("La expresion: ");
+        print(exp);
+        println(" es invalida. Por favor intente de nuevo.");
     }
     else
     {
-        println(exp);
-        println("expresion valida");
+
+        float res = 0;
+        operate(root, &res);
+        char str[NUMBER_LENGTH];
+        ftoa(res, str, 4);
+        print(exp);
+        print(" = ");
+        println(str);
     }
 }
 
@@ -48,6 +60,7 @@ static struct Node *buildExpression(char *exp)
 
 static struct Node *buildExpressionRec(char *exp, int *counter)
 {
+
     struct Node *auxi = NULL;
     if (node_count <= MAX_NODES)
     {
@@ -68,6 +81,7 @@ static struct Node *buildExpressionRec(char *exp, int *counter)
             struct Node *left = buildExpressionRec(exp, counter);
             if (left == NULL)
             {
+
                 return NULL;
             }
             auxi->left = left;
@@ -81,11 +95,14 @@ static struct Node *buildExpressionRec(char *exp, int *counter)
             }
             else
             {
+                putchar(exp[*counter]);
+
                 return NULL;
             }
             struct Node *right = buildExpressionRec(exp, counter);
             if (right == NULL)
             {
+
                 return NULL;
             }
             auxi->right = right;
@@ -96,17 +113,21 @@ static struct Node *buildExpressionRec(char *exp, int *counter)
             }
             else
             {
+
                 return NULL;
             }
         }
         else
         {
 
-            if (getNumber(exp, auxi->value) == FALSE)
+            if (getNumber(exp + *counter, auxi->value) == FALSE)
             {
+
                 return NULL;
             };
+
             *counter = *counter + (strlen(auxi->value));
+
             auxi->left = auxi->right = NULL;
         }
     }
@@ -120,7 +141,7 @@ static int getNumber(char *exp, char *buffer)
     int ok = TRUE;
     int i = 0;
     char c;
-    while (ok == TRUE && i <= NUMBER_LENGTH && (((c = *exp++) >= '0' && c <= '9') || c == '.' || c == ','))
+    while (ok == TRUE && i <= NUMBER_LENGTH && (((c = *exp++) >= '0' && c <= '9') || c == '.'))
     {
 
         if (c == '.' || c == ',')
@@ -137,12 +158,13 @@ static int getNumber(char *exp, char *buffer)
         }
         else
         {
+
             buffer[i++] = c;
         }
     }
-    if (c != ')' && isOperator(c) != TRUE)
+    if ((c != ')' && isOperator(c) != TRUE) || i > NUMBER_LENGTH)
     {
-        println("no es num");
+
         ok = FALSE;
     }
     else
@@ -153,31 +175,115 @@ static int getNumber(char *exp, char *buffer)
     return ok;
 }
 
-static int operate(struct Node *node)
+static void strToFloat(char *s, float *num)
+{
+
+    int decimal = FALSE;
+    int multDec = 10;
+    while (*s != '\0')
+    {
+
+        if (*s == '.')
+        {
+            decimal = TRUE;
+            s++;
+        }
+        else if (decimal == FALSE)
+        {
+            *num = *num * 10;
+            *num = *num + *s - '0';
+            s++;
+        }
+        else
+        {
+            float dec = *s - '0';
+
+            *num = *num + dec / multDec;
+            multDec *= 10;
+            s++;
+        }
+    }
+}
+
+void reverse(char *str, int len)
+{
+    int i = 0, j = len - 1, temp;
+    while (i < j)
+    {
+        temp = str[i];
+        str[i] = str[j];
+        str[j] = temp;
+        i++;
+        j--;
+    }
+}
+
+int intToStr(int x, char str[], int d)
+{
+    int i = 0;
+    while (x)
+    {
+        str[i++] = (x % 10) + '0';
+        x = x / 10;
+    }
+    while (i < d)
+        str[i++] = '0';
+    reverse(str, i);
+    str[i] = '\0';
+    return i;
+}
+
+void ftoa(double n, char *res, int afterpoint)
+{
+
+    int ipart = (int)n;
+
+    double fpart = n - (float)ipart;
+
+    int i = intToStr(ipart, res, 0);
+
+    if (afterpoint != 0)
+    {
+        res[i] = '.'; // add dot
+
+        while (afterpoint > 0)
+        {
+            fpart = fpart * 10;
+            afterpoint--;
+        }
+
+        intToStr((int)fpart, res + i + 1, afterpoint);
+    }
+}
+
+static void operate(struct Node *node, float *res)
 {
     if (node->left == NULL || node->right == NULL)
     {
-        return node->value;
-    }
 
-    char op = *(node->value);
-    int res = NULL;
-    int left = operate(node->left);
-    int right = operate(node->right);
-    switch (op)
-    {
-    case '+':
-        res = left + right;
-        break;
-    case '-':
-        res = left - right;
-        break;
-    case 'x':
-        res = left * right;
-        break;
-    case '%':
-        res = left / right;
-        break;
+        strToFloat(node->value, res);
     }
-    return res;
+    else
+    {
+        char op = (node->value)[0];
+
+        float left, right;
+        operate(node->left, &left);
+        operate(node->right, &right);
+        switch (op)
+        {
+        case '+':
+            *res = left + right;
+            break;
+        case '-':
+            *res = left - right;
+            break;
+        case '*':
+            *res = left * right;
+            break;
+        case '%':
+            *res = left / right;
+            break;
+        }
+    }
 }

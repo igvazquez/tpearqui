@@ -7,12 +7,14 @@
 
 //constantes para la definicion de arrays
 #define SHELL_MESSAGE "Shell: $>"
-#define USER_INPUT_SIZE getScreenWidth() / 2 - strlen(SHELL_MESSAGE) - 1
+#define USER_INPUT_SIZE 30
 #define MAX_FUNCTIONS 20
 #define MAX_ARGUMENTS_SIZE 5
 #define SHELL 0
 #define CALCULATOR 1
 #define SHELLS 2
+#define OPERATORS 7
+#define VALID_CHARS_CALC 18
 
 #define END_OF_EXECUTION_KEY 27
 #define GAME_RETURNING_KEY '\t'
@@ -33,6 +35,11 @@ functionPackage functions[MAX_FUNCTIONS];
 int functionsSize = 0;
 
 int currentShell = SHELL;
+int shellIndex = 0;
+int calcIndex = 0;
+int pendingInstruction = 0;
+char ops[OPERATORS] = {'+', '-', '*', '%', '(', ')', ' '};
+char validChars[VALID_CHARS_CALC] = {'.', '+', '-', '*', '%', '(', ')', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
 int cursorTick = 0;
 
@@ -43,7 +50,7 @@ static void loadFunctions();
 static void loadFunction(char *string, void (*fn)(), char *desc);
 
 //Funciones utilizadas para la operacion de la shell.
-static int readUserInput(char *buffer, int maxSize);
+static int readUserInput(char **buffer, int maxSize);
 static void processInstruction(char *userInput);
 static void processCalculation(char *userInput);
 
@@ -72,9 +79,6 @@ static void help(int argcount, char *args[]);
 static void triggerException0(int argcount, char *args[]);
 static void triggerException6(int argcount, char *args[]);
 
-//arkanoid: juego arkanoid. Partida nueva o continuada.
-static void arkanoid(int argcount, char *args[]);
-
 //Modulos adicionales
 
 //ticksElpased: funcion demostrativa de la syscall 0.
@@ -85,29 +89,24 @@ static void ticksElpased(int argcount, char *args[]);
 // Imprime todos los argumentos que recibe.
 static void printArgs(int argcount, char *args[]);
 
-//beep: emite un sonido breve.
-static void playSound(int argcount, char *args[]);
-
-//canciones disponibles.
-static void playLavander(int argcount, char *args[]);
-static void playForElisa(int argcount, char *args[]);
-static void playDefeat(int argcount, char *args[]);
-static void playSadness(int argcount, char *args[]);
-static void playVictory(int argcount, char *args[]);
-static void playEvangelion(int argcount, char *args[]);
-//End
-
 void startShell()
 {
     //Se cargan los modulos
     loadFunctions();
     clearScreen();
     setCursorPos(0, getScreenHeight() - 1);
-    char userInput[SHELLS][USER_INPUT_SIZE];
+    char *userInput[SHELLS];
+    char shellBuffer[USER_INPUT_SIZE];
+    char calcBuffer[USER_INPUT_SIZE];
+
+    userInput[SHELL] = shellBuffer;
+    userInput[CALCULATOR] = calcBuffer;
 
     for (int i = 0; i < verticalPixelCount(); i++)
     {
         drawPixel(horizontalPixelCount() / 2, i, 0x2b66cc);
+        drawPixel(horizontalPixelCount() / 2 + 1, i, 0x2b66cc);
+        drawPixel(horizontalPixelCount() / 2 + 2, i, 0x2b66cc);
     }
 
     setCursorPos(getScreenWidth() / 2 + 1, getScreenHeight() - 1);
@@ -117,19 +116,20 @@ void startShell()
 
     //Se espera hasta que se reciba un enter y luego, se procesa el texto ingresado.
     //Si coincide con el nombre de una funcion se la ejecuta, sino se vuelve a modo lectura.
-    while (readUserInput(userInput[currentShell], USER_INPUT_SIZE))
+    while (readUserInput(userInput, USER_INPUT_SIZE))
     {
 
-        if (currentShell == SHELL)
+        if (currentShell == SHELL && pendingInstruction)
         {
             processInstruction(userInput[SHELL]);
             printf(SHELL_MESSAGE, 0x5CFEE4, 0);
         }
-        else
+        else if (pendingInstruction)
         {
             processCalculation(userInput[CALCULATOR]);
             printf(SHELL_MESSAGE, 0x5CFEE4, 0);
         }
+        pendingInstruction = 0;
 
         for (int i = 0; i < verticalPixelCount(); i++)
         {
@@ -141,15 +141,13 @@ void startShell()
 //Funcion encargada de la lectura del texto ingresado por el usuario.
 //Se encarga de guardarlo en un buffer para luego ser procesado. Maneja borrado,
 // tecla especial para volver al juego y tecla especial para el corte de ejecucion.
-static int readUserInput(char *buffer, int maxSize)
+static int readUserInput(char **buffer, int maxSize)
 {
-
-    int counter = 0;
     char c;
     int currentTimerTick;
     int lastTimerTick = -1;
 
-    while ((counter < maxSize - 1) && (c = getChar()) != '\n')
+    while ((shellIndex < maxSize - 1) && (calcIndex < maxSize - 1) && (c = getChar()) != '\n')
     {
 
         //Parpadeo del cursor.
@@ -174,31 +172,61 @@ static int readUserInput(char *buffer, int maxSize)
                     currentShell = CALCULATOR;
                     setCursorPos(getScreenWidth() / 2 + 1, getScreenHeight() - 1);
                     printf(SHELL_MESSAGE, 0x5CFEE4, 0);
+                    setCursorPos(getScreenWidth() / 2 + strlen(SHELL_MESSAGE) + calcIndex + 1, getScreenHeight() - 1);
                 }
-                else
+                else if (currentShell == CALCULATOR)
                 {
                     currentShell = SHELL;
                     setCursorPos(0, getScreenHeight() - 1);
                     printf(SHELL_MESSAGE, 0x5CFEE4, 0);
+                    setCursorPos(strlen(SHELL_MESSAGE) + shellIndex, getScreenHeight() - 1);
                 }
             }
-
-            if (c != '\b')
+            else if (c != '\b')
             {
-                putchar(c);
-                buffer[counter++] = c;
+                if (currentShell == SHELL)
+                {
+                    putchar(c);
+                    buffer[SHELL][shellIndex++] = c;
+                }
+                else if (currentShell == CALCULATOR)
+                {
+                    for (int i = 0; i < VALID_CHARS_CALC; i++)
+                    {
+                        if (c == validChars[i])
+                        {
+                            putchar(c);
+                            buffer[CALCULATOR][calcIndex++] = c;
+                        }
+                    }
+                }
             }
-            else if (counter > 0)
+            else if (currentShell == SHELL && shellIndex > 0 && c == '\b')
             {
                 putchar('\b');
-                counter--;
+                shellIndex--;
+            }
+            else if (currentShell == CALCULATOR && calcIndex > 0 && c == '\b')
+            {
+                putchar('\b');
+                calcIndex--;
             }
         }
     }
-    turnOffCursor();
-    buffer[counter++] = '\0';
-    putchar('\n');
 
+    turnOffCursor();
+    if (currentShell == SHELL)
+    {
+        buffer[currentShell][shellIndex++] = '\0';
+        shellIndex = 0;
+    }
+    else
+    {
+        buffer[currentShell][calcIndex++] = '\0';
+        calcIndex = 0;
+    }
+    pendingInstruction = 1;
+    putchar('\n');
     return 1;
 }
 
@@ -209,10 +237,14 @@ static void processCalculation(char *userInput)
 
 //Funcion encargada de procesar el texto recibido. Se guardan los argumentos en un array
 // y se verifica si el texto ingresado valida con el nombre de una funcion para asi llamarla.
-static void processInstruction(char *userInput)
+static void processInstruction(char *instruction)
 {
     char *arguments[MAX_ARGUMENTS_SIZE];
-    int argCount = strtok(userInput, ' ', arguments, MAX_ARGUMENTS_SIZE);
+    if (*instruction == '\0')
+    {
+        return;
+    }
+    int argCount = strtok(instruction, ' ', arguments, MAX_ARGUMENTS_SIZE);
     for (int i = 0; i < functionsSize; i++)
     {
         if (strcmp(arguments[0], functions[i].name))
@@ -221,9 +253,9 @@ static void processInstruction(char *userInput)
             return;
         }
     }
-    if (*userInput != 0)
+    if (*instruction != 0)
     {
-        print(userInput);
+        print(instruction);
         println(" not found");
     }
 }
@@ -239,14 +271,6 @@ static void loadFunctions()
     loadFunction("printmem", &printmem, "Makes a 32 Bytes memory dump to screen from the address passed by argument.\nAddress in hexadecimal and 0 is not valid.\n");
     loadFunction("triggerException0", &triggerException0, "Triggers Exception number 0 \n");
     loadFunction("triggerException6", &triggerException6, "Triggers Exception number 6 \n");
-    loadFunction("arkanoid", &arkanoid, "Arkanoid Game! Args: No args for new game. -c to continue last game.\n");
-    loadFunction("beep", &playSound, "Plays a beep \n");
-    loadFunction("Lavander", &playLavander, "Plays an indie game's music");
-    loadFunction("Elisa", &playForElisa, "Music for a student\n");
-    loadFunction("Evangelion", &playEvangelion, "Evangelion theme\n");
-    loadFunction("SadMusic", &playSadness, "Music to listen when you are sad");
-    loadFunction("Victory", &playVictory, "Music to listen when you win");
-    loadFunction("Defeat", &playDefeat, "Music to listen when you are happyn't");
 }
 
 static void loadFunction(char *string, void (*fn)(), char *desc)
@@ -417,49 +441,4 @@ static void triggerException0(int argcount, char *args[])
 static void triggerException6(int argcount, char *args[])
 {
     __asm__("ud2"); //https://mudongliang.github.io/x86/html/file_module_x86_id_318.html
-}
-
-static void playSound(int argcount, char *args[])
-{
-    sysBeep(A, 5);
-}
-
-static void arkanoid(int argcount, char *args[])
-{
-    if (argcount == 0)
-        startArkanoid(NEW_GAME);
-    else if (strcmp(args[0], "-c"))
-        startArkanoid(CONTINUE);
-    else
-        println("Wrong Arguments");
-}
-
-static void playLavander(int argcount, char *args[])
-{
-    Lavander();
-}
-
-static void playVictory(int argcount, char *args[])
-{
-    Victory();
-}
-
-static void playForElisa(int argcount, char *args[])
-{
-    forElisa();
-}
-
-static void playEvangelion(int argcount, char *args[])
-{
-    Evangelion();
-}
-
-static void playSadness(int argcount, char *args[])
-{
-    Sadness();
-}
-
-static void playDefeat(int argcount, char *args[])
-{
-    Defeat();
 }
