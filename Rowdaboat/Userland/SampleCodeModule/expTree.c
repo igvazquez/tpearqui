@@ -2,36 +2,68 @@
 #include <usrlib.h>
 
 #define NULL 0
-static bool isOperator(char c);
-static double getNumber(char *exp);
-static double operate(Node *node);
+#define TRUE 1
+#define FALSE 0
+#define MAX_NODES 30
 
-static bool isOperator(char c)
+static int isOperator(char c);
+static int isNumber(char *exp);
+static void getNumber(char *exp, char *buffer);
+static int operate(struct Node *node);
+static struct Node *buildExpression(char *exp);
+
+struct Node nodes[MAX_NODES];
+int node_count = 0;
+
+static int isOperator(char c)
 {
     if (c == '+' || c == '-' ||
         c == 'x' ||
         c == '%')
-        return true;
-    return false;
+        return TRUE;
+    return FALSE;
 }
 
-double calculate(char *exp)
+void calculate(char *exp)
 {
-    Node *root = buildExpression(exp);
-    return operate(root);
+    struct Node *root = buildExpression(&exp);
+    if (root == NULL)
+    {
+        println("Error: expresión inválida.");
+    }
+    else
+    {
+        int res = operate(root);
+        printint(res);
+        putchar('\n');
+    }
 }
 
-static Node *buildExpression(char *exp)
+static struct Node *buildExpression(char **exp)
 {
-    Node *auxi = new Node();
+    struct Node *auxi = NULL;
+    if (node_count <= MAX_NODES)
+    {
+        auxi = nodes[node_count++];
+    }
+    else
+    {
+        print("Expresion is too long");
+        return NULL;
+    }
 
-    if (*exp != '\0')
+    if (**exp != '\0')
     {
 
-        if (*exp == "(")
+        if (**exp == '(')
         {
-            exp++;
-            auxi->left = buildExpression(exp++);
+            *exp++;
+            struct Node *left = buildExpression(exp);
+            if (left == NULL)
+            {
+                return NULL;
+            }
+            auxi->left = left;
 
             if (isOperator(*exp++))
             {
@@ -39,103 +71,100 @@ static Node *buildExpression(char *exp)
             }
             else
             {
-                print("2.Bad expression\n");
+                return NULL;
             }
-            auxi->right = buildExpression(exp++);
-            if (*exp == ")")
+            struct Node *right = buildExpression(exp);
+            if (right == NULL)
             {
-                exp++;
+                return NULL;
+            }
+            auxi->right = right;
+
+            if (**exp == ')')
+            {
+                *exp++;
             }
             else
             {
-                print("3.Bad expression\n");
+                return NULL;
             }
         }
         else
         {
-            double number = getNumber(exp);
-            auxi->value = number;
+
+            if (getNumber(*exp, auxi->value) == FALSE)
+            {
+                return NULL;
+            };
+            *exp += (strlen(auxi->value));
             auxi->left = auxi->right = NULL;
-        }
-        else
-        {
-            print("4.Bad expression\n");
         }
     }
     return auxi;
 }
 
-static double getNumber(char *exp)
+static int getNumber(char *exp, char *buffer)
 {
-    double num = 0;
-    bool decimal = false;
 
-    int multDec = 10;
+    int decimal = FALSE;
+    int ok = TRUE;
+    int i = 0;
     char c;
-    while ((c = *exp) >= '0' && c <= '9' || c == '.' || c == ',')
+    while (ok == TRUE && i <= NUMBER_LENGTH && ((c = *exp++) >= '0' && c <= '9') || c == '.' || c == ',')
     {
 
-        if (c >= '0' && c <= '9')
+        if (c == '.' || c == ',')
         {
-            if (!decimal)
+            if (decimal == 1)
             {
-                num *= 10;
-                num += c - '0';
+                ok = 0;
             }
             else
             {
-                int dec = (c - '0') / multDec;
-                multDec *= 10;
-                num += dec;
+                buffer[i++] = c;
+                decimal = TRUE;
             }
         }
         else
         {
-            if (c == '.' || c == ',')
-            {
-                if (decimal)
-                {
-                    printf("5. Bad expression");
-                }
-                else
-                {
-                    decimal = true;
-                }
-            }
+            buffer[i++] = c;
         }
     }
-    if (c != ')' && !isOperator(c))
+    if (c != ')' && isOperator(c) != TRUE)
     {
-        printf("6. Bad expression");
-        return -1;
+        ok = FALSE;
+    }
+    else
+    {
+        buffer[i] = '\0';
     }
 
-    return num;
+    return ok;
 }
 
-static double operate(Node *node)
+static int operate(struct Node *node)
 {
     if (node->left == NULL || node->right == NULL)
     {
-        return node->data;
+        return node->value;
     }
 
-    char op = node->data;
-    double res = NULL;
-    double left = operate(node->left);
-    double right = operate(node->right);
+    char op = *(node->value);
+    int res = NULL;
+    int left = operate(node->left);
+    int right = operate(node->right);
     switch (op)
     {
-    case "+":
+    case '+':
         res = left + right;
         break;
-    case "-":
+    case '-':
         res = left - right;
         break;
-    case "x":
+    case 'x':
         res = left * right;
         break;
-    case "%":
+    case '%':
         res = left / right;
         break;
     }

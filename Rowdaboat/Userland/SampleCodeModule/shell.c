@@ -44,10 +44,10 @@ static void loadFunction(char *string, void (*fn)(), char *desc);
 //Funciones utilizadas para la operacion de la shell.
 static int readUserInput(char *buffer, int maxSize);
 static void processInstruction(char *userInput);
-static void processCalculation(char *userInput)
+static void processCalculation(char *userInput);
 
-    //Funciones auxiliares para tener un cursor parpadeante.
-    static void tickCursor();
+//Funciones auxiliares para tener un cursor parpadeante.
+static void tickCursor();
 static void turnOffCursor();
 
 //Modulos - Funciones ejecutables desde la shell
@@ -126,7 +126,7 @@ void startShell()
         }
         else
         {
-            //processcalc
+            processCalculation(userInput[CALCULATOR]);
             printf(SHELL_MESSAGE, 0x5CFEE4, 0);
         }
 
@@ -203,6 +203,8 @@ static int readUserInput(char *buffer, int maxSize)
 
 static void processCalculation(char *userInput)
 {
+
+    println(userInput);
 }
 
 //Funcion encargada de procesar el texto recibido. Se guardan los argumentos en un array
