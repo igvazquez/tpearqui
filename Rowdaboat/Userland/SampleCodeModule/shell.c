@@ -1,8 +1,6 @@
 //shell.c
 #include <shell.h>
 #include <usrlib.h>
-#include <arkanoid.h>
-#include <music.h>
 
 //constantes para la definicion de arrays
 #define SHELL_MESSAGE "Shell: $>"
@@ -16,7 +14,6 @@
 #define VALID_CHARS_CALC 17
 
 #define END_OF_EXECUTION_KEY 27
-#define GAME_RETURNING_KEY '\t'
 #define CURSOR_COLOR 0x00FF00
 
 //Vars
