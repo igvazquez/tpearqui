@@ -31,7 +31,7 @@ static int isOperator(char c)
 
 void calculate(char *exp)
 {
-
+    node_count = 0;
     struct Node *root = buildExpression(exp);
     if (root == NULL)
     {
