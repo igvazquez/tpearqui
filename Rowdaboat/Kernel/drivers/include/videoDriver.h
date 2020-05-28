@@ -5,11 +5,15 @@
 
 #include <stdint.h>
 #include <font.h>
-
 void init_VM_Driver();
 
 //Funcion asociada a la sysCall 1, permite colorear un pixel especifico.
 void drawPixel(unsigned int x, unsigned int y, int color);
+
+//Set size of "pixel"
+void setSize(int size);
+
+int getCharSize();
 
 void drawChar(int x, int y, char character, int fontColor, int backgroundColor);
 

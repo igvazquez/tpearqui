@@ -74,4 +74,7 @@ extern int horizontalPixelCount();
 //syscall 7:
 extern uint8_t getTime(uint64_t timeDescriptor);
 
+//syscall 8:
+extern void setSize(int size);
+
 #endif
