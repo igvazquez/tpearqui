@@ -77,4 +77,7 @@ extern uint8_t getTime(uint64_t timeDescriptor);
 //syscall 8:
 extern void sysBeep(uint32_t nFrequence, uint16_t time);
 
+//syscall 9:
+extern void setSize(int size);
+
 #endif

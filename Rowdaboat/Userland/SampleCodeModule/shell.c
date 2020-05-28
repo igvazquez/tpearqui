@@ -80,7 +80,7 @@ static void triggerException0(int argcount, char *args[]);
 static void triggerException6(int argcount, char *args[]);
 
 //Modulos adicionales
-
+static void startTerminal(char start);
 //ticksElpased: funcion demostrativa de la syscall 0.
 //Imprime los ticks actuales.
 static void ticksElpased(int argcount, char *args[]);
@@ -90,11 +90,49 @@ static void ticksElpased(int argcount, char *args[]);
 static void printArgs(int argcount, char *args[]);
 
 void startShell()
+{ 
+
+    clearScreen();
+
+    char selector = 'b'; 
+    setCursorPos(12, 3);
+    setSize(4);
+    printf("TPE DE PC \n \n \n \n \n", 0xFF44FF, 0);
+    setSize(2);
+    printf("    legajo, Vazquez     59489, Torrusio     legajo, Monaco \n \n", 0x5CFEE4, 0);
+    
+    printf("                    0)Terminal  1)Calculadora", 0x5CFEE4, 0);
+    setSize(1);
+    while(((selector=getChar())!='0') && (selector!='1'));
+    startTerminal(selector);
+}
+static void startTerminal(char selector)
 {
     //Se cargan los modulos
     loadFunctions();
     clearScreen();
+    setCursorPos(getScreenWidth() / 2 + 1, getScreenHeight() - 1);
+    printf(SHELL_MESSAGE, 0x5CFEE4, 0);
     setCursorPos(0, getScreenHeight() - 1);
+    printf(SHELL_MESSAGE, 0x5CFEE4, 0);
+    
+    for (int i = 0; i < verticalPixelCount(); i++)
+    {
+        drawPixel(horizontalPixelCount() / 2, i, 0x2b66cc);
+        drawPixel(horizontalPixelCount() / 2 + 1, i, 0x2b66cc);
+        drawPixel(horizontalPixelCount() / 2 + 2, i, 0x2b66cc);
+    };
+    
+    if (selector == '1')
+    {
+        currentShell = CALCULATOR;
+        setCursorPos(getScreenWidth() / 2 + strlen(SHELL_MESSAGE) + calcIndex + 1, getScreenHeight() - 1);
+    }
+    else if (selector == '0')
+    {
+        currentShell = SHELL;
+        setCursorPos(strlen(SHELL_MESSAGE) + shellIndex, getScreenHeight() - 1);   
+    }
     char *userInput[SHELLS];
     char shellBuffer[USER_INPUT_SIZE];
     char calcBuffer[USER_INPUT_SIZE];
@@ -102,17 +140,9 @@ void startShell()
     userInput[SHELL] = shellBuffer;
     userInput[CALCULATOR] = calcBuffer;
 
-    for (int i = 0; i < verticalPixelCount(); i++)
-    {
-        drawPixel(horizontalPixelCount() / 2, i, 0x2b66cc);
-        drawPixel(horizontalPixelCount() / 2 + 1, i, 0x2b66cc);
-        drawPixel(horizontalPixelCount() / 2 + 2, i, 0x2b66cc);
-    }
+    
 
-    setCursorPos(getScreenWidth() / 2 + 1, getScreenHeight() - 1);
-    printf(SHELL_MESSAGE, 0x5CFEE4, 0);
-    setCursorPos(0, getScreenHeight() - 1);
-    printf(SHELL_MESSAGE, 0x5CFEE4, 0);
+    
 
     //Se espera hasta que se reciba un enter y luego, se procesa el texto ingresado.
     //Si coincide con el nombre de una funcion se la ejecuta, sino se vuelve a modo lectura.
