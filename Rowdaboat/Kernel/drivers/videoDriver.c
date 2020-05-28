@@ -4,7 +4,8 @@
 unsigned int horizontalPixelCount = 1024;
 unsigned int verticalPixelCount = 768;
 unsigned int numberOfColorBytes = 3;
-
+int charSize = 1;
+ 
 struct vbe_mode_info_structure {
 	uint16_t attributes;		// deprecated, only bit 7 should be of interest to you, and it indicates the mode supports a linear frame buffer.
 	uint8_t window_a;			// deprecated
@@ -73,8 +74,21 @@ void copyPixel(unsigned int xFrom, unsigned int yFrom, unsigned int xTo, unsigne
 	screen[to+2] = screen[from+2]; //blue
 }
 
+void setSize(int size){
+	if (size > 0){
+		charSize = size;
+	}
+	else {
+		charSize = 1;
+	}
+}
+
+int getCharSize(){
+	return charSize;
+}
+
 void drawChar(int x, int y, char character, int fontColor, int backgroundColor){
-	
+
 	if(x < 0 || x > horizontalPixelCount - CHAR_WIDTH || y < 0 || y > verticalPixelCount - CHAR_HEIGHT){
 		return;
 	}
@@ -90,15 +104,34 @@ void drawChar(int x, int y, char character, int fontColor, int backgroundColor){
 		for (int j = 0; j < CHAR_WIDTH; j++){
 			bitIsPresent = (1 << (CHAR_WIDTH - 1 - j)) & toDraw[i]; //Ver pie de la funcion
 
-			if(bitIsPresent)
-				drawPixel(aux_x, aux_y, fontColor);
-			else
-				drawPixel(aux_x, aux_y, backgroundColor);
-
-				aux_x++;
+			if(bitIsPresent){
+				for (int z = 0; z < charSize ; z++){
+					for(int s = 0; s < charSize ; s++){
+						drawPixel(aux_x, aux_y, fontColor);
+						aux_y++;
+					}
+					aux_x++;
+					aux_y = aux_y - charSize;
+				}
+				
+			}
+			else {
+				for (int z = 0; z < charSize ; z++){
+					for (int s = 0; s < charSize ; s++){
+						drawPixel(aux_x, aux_y, backgroundColor);
+						aux_y++;
+					}
+					aux_x++;
+					aux_y = aux_y - charSize;
+				}
+				
+			}
+			
 		}
 		aux_x = x;
-		aux_y++;
+		aux_y += charSize;
+		
+
 	}
 }
 //En la implementacion provista no se le restaba 1 en "CHAR_WIDTH - 1 - j", observamos que esto 

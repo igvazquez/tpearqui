@@ -41,7 +41,8 @@ void putcharf(char c, unsigned int font, unsigned int background)
     if (cursorPosY >= screenHeight)
         scrollDownOnce(background);
 
-    drawChar(cursorPosX * CHAR_WIDTH, cursorPosY * CHAR_HEIGHT, c, font, background);
+    int charSize = getCharSize();
+    drawChar(cursorPosX * CHAR_WIDTH * charSize, cursorPosY * CHAR_HEIGHT *charSize, c, font, background);
 
     cursorPosX++;
     if (cursorPosX == screenWidth/2)
@@ -174,16 +175,17 @@ static void enter(unsigned int background)
 static void backspace(unsigned int background)
 {
     int screenId = getScreenId(cursorPosX);
+    int charSize = getCharSize();
     if ((screenId == 0 && cursorPosX == 0 && cursorPosY == 0) || (screenId == 1 && cursorPosX == screenWidth / 2 && cursorPosY == 0))
     {
         return;
     }
 
     if ((screenId == 0 && cursorPosX == 0) || (screenId == 1 && cursorPosX == screenWidth / 2))
-        drawChar(cursorPosX * CHAR_WIDTH, cursorPosY * CHAR_HEIGHT, ' ', 0, background);
+        drawChar(cursorPosX * CHAR_WIDTH * charSize, cursorPosY * CHAR_HEIGHT * charSize, ' ', 0, background);
     else
     {
-        drawChar((cursorPosX - 1) * CHAR_WIDTH, cursorPosY * CHAR_HEIGHT, ' ', 0, background);
+        drawChar((cursorPosX - 1) * CHAR_WIDTH * charSize, cursorPosY * CHAR_HEIGHT *charSize, ' ', 0, background);
         setCursorPos(cursorPosX - 1, cursorPosY);
     }
 }

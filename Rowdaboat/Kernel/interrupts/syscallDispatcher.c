@@ -43,6 +43,10 @@ uint64_t syscallDispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rc
 			//void beep(uint32_t nFrequence, uint16_t time);
 			beep(rsi,rdx);
 			break;
+		case 9:
+			// void setSize(int size);
+			setSize(rsi);
+			break;
 	}
 	return 0;
 }
