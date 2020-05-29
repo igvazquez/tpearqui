@@ -1,4 +1,4 @@
-#include <expTree.h>
+#include <calculator.h>
 #include <usrlib.h>
 #include <stdint.h>
 #include <limits.h>
@@ -7,16 +7,17 @@
 #define TRUE 1
 #define FALSE 0
 #define MAX_NODES 30
+#define VALID_CHARS_CALC 19
+#define INPUT_MESSAGE "Calc: $>"
+#define USER_INPUT_SIZE 100
 //Errors
 #define INT_OVERFLOW_ERR 2
 #define SYNTAX_ERR 3
 #define MATH_ERROR 4
 #define EXP_LENGTH_ERR 4
 
-//
-
+//Func Definitions
 static int isOperator(char c);
-
 static int getNumber(char *exp, char *buffer);
 static int operate(struct Node *node, double *num);
 static int buildExpression(struct Node **node, char *exp);
@@ -26,11 +27,98 @@ void ftoa(double n, char *res, int afterpoint);
 static void printResult(struct Node *root, char *exp);
 int intToStr(int x, char str[], int d);
 void reverse(char *str, int len);
-
 static void printError(int code);
-
+static void calculate(char *exp);
+static int isValid(char c);
+static void enter();
+static void erase();
+//variables
 struct Node nodes[MAX_NODES];
-int node_count = 0;
+static int node_count = 0;
+static char calcBuffer[USER_INPUT_SIZE];
+static int calcIndex = 0;
+char validChars[VALID_CHARS_CALC] = {'=', '.', '+', '-', '*', '%', '(', ')', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '\b'};
+////////////
+
+void initCalc()
+{
+    printCalcRules();
+    printf(INPUT_MESSAGE, 0x5CFEE4, 0);
+    loadCalcScreen();
+}
+
+void loadCalcScreen()
+{
+
+    setCursorPos(getScreenWidth() / 2 + 1 + strlen(INPUT_MESSAGE) + calcIndex, getScreenHeight() - 1);
+}
+
+void processCalcInput(char c)
+{
+    if ((calcIndex < USER_INPUT_SIZE - 1))
+    {
+
+        if (isValid(c))
+        {
+            if (c == '\b')
+            {
+                erase();
+            }
+            else
+            {
+                calcBuffer[calcIndex++] = c;
+                putchar(c);
+                if (c == '=')
+                {
+                    enter();
+                }
+            }
+        }
+    }
+    else
+    {
+        if (c == '\n')
+        {
+            enter();
+        }
+        else if (c == '\b')
+        {
+            erase();
+        }
+    }
+}
+
+static void enter()
+{
+    calcBuffer[calcIndex] = '\0';
+    putchar('\n');
+    calcIndex = 0;
+
+    calculate(calcBuffer);
+    printf(INPUT_MESSAGE, 0x5CFEE4, 0);
+}
+static void erase()
+{
+    if (calcIndex > 0)
+    {
+        calcIndex--;
+        putchar('\b');
+    }
+}
+
+static int isValid(char c)
+{
+    for (int i = 0; i < VALID_CHARS_CALC; i++)
+    {
+
+        if (c == validChars[i])
+        {
+            return TRUE;
+            break;
+        }
+    }
+    return FALSE;
+}
 
 static int isOperator(char c)
 {
@@ -77,7 +165,7 @@ void printCalcRules()
     println("3) Cover every bynary operation with parenthesis.\nFor example: (1+(2*3))");
 }
 
-void calculate(char *exp)
+static void calculate(char *exp)
 {
 
     if (*exp == '\n' || *exp == ' ' || *exp == '\0')
@@ -104,14 +192,14 @@ static void printError(int code)
     {
 
     case SYNTAX_ERR:
-        println("Syntax error");
+        printf("Syntax error\n", PINK, 0);
         break;
     case INT_OVERFLOW_ERR:
-        println("Math error: integer overflow");
+        printf("Math error: integer overflow\n", PINK, 0);
         break;
 
     case EXP_LENGTH_ERR:
-        println("Math error: expression is too long");
+        printf("Math error: expression is too long\n", PINK, 0);
         break;
     default:
 
@@ -226,18 +314,15 @@ static int buildExpressionRec(struct Node **node, char *exp, int *counter)
 static int getNumber(char *exp, char *buffer)
 {
 
-    print("Number: ");
-    putchar(*exp);
-    putchar('\n');
     int decimal = FALSE;
-    int negative = FALSE;
+
     int res = TRUE;
     int i = 0;
     char c;
     int limit = INT_LENGTH;
     if (*exp == '-')
     {
-        negative = TRUE;
+
         buffer[i++] = '-';
         exp++;
         limit += 1; // Because we add '-'
@@ -404,9 +489,7 @@ void ftoa(double n, char *res, int afterpoint)
         }
         if (cantZeros > 0)
         {
-            print("CantZeros: ");
-            printint(cantZeros);
-            putchar('\n');
+
             i++;
             int j = cantZeros;
             while (j)
@@ -440,22 +523,17 @@ static int operate(struct Node *node, double *res)
     {
 
         strToFloat(node->value, res);
+        return TRUE;
     }
     else
     {
         char op = (node->value)[0];
-        print("op: ");
-        putchar(op);
-        putchar('\n');
+
         double left = 0, right = 0;
         operate(node->left, &left);
-        print("LEFT: ");
-        printint((int)left);
-        putchar('\n');
+
         operate(node->right, &right);
-        print("RIGHT: ");
-        printint((int)right);
-        putchar('\n');
+
         switch (op)
         {
         case '+':
@@ -493,6 +571,9 @@ static int operate(struct Node *node, double *res)
             }
             return INT_OVERFLOW_ERR;
 
+            break;
+        default:
+            return NULL;
             break;
         }
     }

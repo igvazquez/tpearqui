@@ -1,5 +1,5 @@
-#ifndef __EXPTREE_H__
-#define __EXPTREE_H__
+#ifndef __CALCULATOR_H__
+#define __CALCULATOR_H__
 
 #define INT_LENGTH 10
 
@@ -9,7 +9,9 @@ struct Node
     struct Node *left, *right;
 };
 
-void calculate(char *exp);
 void printCalcRules();
+void processCalcInput(char c);
+void loadCalcScreen();
+void initCalc();
 
 #endif

@@ -44,6 +44,10 @@ uint64_t syscallDispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rc
 		// void setSize(int size);
 		setSize(rsi);
 		break;
+	case 9:
+		//int setScreen(unsigned int id);
+		setScreen(rsi);
+		break;
 	}
 	return 0;
 }

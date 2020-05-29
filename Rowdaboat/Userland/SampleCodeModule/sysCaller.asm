@@ -11,6 +11,8 @@ GLOBAL verticalPixelCount
 GLOBAL horizontalPixelCount
 GLOBAL getTime
 GLOBAL setSize
+GLOBAL setScreen
+
 
 %macro pushState 0
 	push rbx
@@ -85,4 +87,7 @@ getTime:
 	sysCaller 7
 
 setSize:
+	sysCaller 8
+
+setScreen:
 	sysCaller 9
