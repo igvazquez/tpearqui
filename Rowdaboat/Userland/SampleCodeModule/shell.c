@@ -5,7 +5,7 @@
 
 //constantes para la definicion de arrays
 #define SHELL_MESSAGE "Shell: $>"
-#define USER_INPUT_SIZE 30
+#define USER_INPUT_SIZE 60
 #define MAX_FUNCTIONS 20
 #define MAX_ARGUMENTS_SIZE 5
 #define SHELL 0

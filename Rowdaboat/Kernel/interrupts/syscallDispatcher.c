@@ -6,7 +6,6 @@
 #include <screenDriver.h>
 #include <keyboardDriver.h>
 #include <rtcDriver.h>
-#include <soundDriver.h>
 
 //Funcion encargada de llamar a la funcion asociada a la systemCall llamada y pasarle 
 // los parametros correctos.

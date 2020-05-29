@@ -68,7 +68,7 @@ static struct Node *buildExpressionRec(char *exp, int *counter)
     }
     else
     {
-        print("Expresion is too long");
+        println("Expresion demasiado grande");
         return NULL;
     }
 
@@ -81,7 +81,6 @@ static struct Node *buildExpressionRec(char *exp, int *counter)
             struct Node *left = buildExpressionRec(exp, counter);
             if (left == NULL)
             {
-
                 return NULL;
             }
             auxi->left = left;
