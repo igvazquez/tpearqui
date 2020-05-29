@@ -197,21 +197,21 @@ static int buildExpressionRec(struct Node **node, char *exp, int *counter)
         }
         else
         {
-
-            if (getNumber(exp + *counter, (*node)->value) == FALSE)
+            int result = getNumber(exp + *counter, (*node)->value);
+            if (result)
             {
-                println("ERROR NUM");
-                return SYNTAX_ERR;
-            }
-            print("value: ");
-            println((*node)->value);
-            *counter = *counter + (strlen((*node)->value));
-            print("Counter: ");
-            printint(*counter);
-            putchar('\n');
 
-            (*node)->left = (*node)->right = NULL;
-            return TRUE;
+                print("value: ");
+                println((*node)->value);
+                *counter = *counter + (strlen((*node)->value));
+                print("Counter: ");
+                printint(*counter);
+                putchar('\n');
+
+                (*node)->left = (*node)->right = NULL;
+            }
+
+            return result;
         }
     }
     return TRUE;
@@ -236,6 +236,10 @@ static int getNumber(char *exp, char *buffer)
     }
     while (res == TRUE && i <= NUMBER_LENGTH && (((c = *exp++) >= '0' && c <= '9') || c == '.'))
     {
+        if ((negative == TRUE && i > 10) || (negative == FALSE && i > 9))
+        {
+            return INT_OVERFLOW_ERR;
+        }
 
         if (c == '.')
         {
@@ -262,13 +266,9 @@ static int getNumber(char *exp, char *buffer)
     {
         buffer[i] = '\0';
     }
+
     if (res)
     {
-        println("RES = TRUE");
-    }
-    else
-    {
-        println("RES = FALSE");
     }
 
     return res;
