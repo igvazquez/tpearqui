@@ -9,7 +9,7 @@
 #define MAX_NODES 30
 #define VALID_CHARS_CALC 19
 #define INPUT_MESSAGE "Calc: $>"
-#define USER_INPUT_SIZE 30
+#define USER_INPUT_SIZE 119
 //Errors
 #define INT_OVERFLOW_ERR 2
 #define SYNTAX_ERR 3
