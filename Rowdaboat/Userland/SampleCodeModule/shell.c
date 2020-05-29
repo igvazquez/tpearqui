@@ -153,6 +153,7 @@ static void startTerminal(char selector)
         }
         else if (pendingInstruction)
         {
+
             processCalculation(userInput[CALCULATOR]);
             printf(SHELL_MESSAGE, 0x5CFEE4, 0);
         }
