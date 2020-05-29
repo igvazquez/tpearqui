@@ -9,7 +9,7 @@
 #define MAX_NODES 30
 #define VALID_CHARS_CALC 19
 #define INPUT_MESSAGE "Calc: $>"
-#define USER_INPUT_SIZE 100
+#define USER_INPUT_SIZE 30
 //Errors
 #define INT_OVERFLOW_ERR 2
 #define SYNTAX_ERR 3
@@ -55,7 +55,7 @@ void loadCalcScreen()
 
 void processCalcInput(char c)
 {
-    if ((calcIndex < USER_INPUT_SIZE - 1))
+    if ((calcIndex < USER_INPUT_SIZE - 2))
     {
 
         if (isValid(c))
@@ -77,7 +77,7 @@ void processCalcInput(char c)
     }
     else
     {
-        if (c == '\n')
+        if (c == '=')
         {
             enter();
         }
@@ -163,6 +163,7 @@ void printCalcRules()
     printint(INT_MAX);
     putchar('\n');
     println("3) Cover every bynary operation with parenthesis.\nFor example: (1+(2*3))");
+    println("4) Press '=' to evaluate the expression");
 }
 
 static void calculate(char *exp)

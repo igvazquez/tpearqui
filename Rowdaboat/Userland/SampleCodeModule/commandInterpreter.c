@@ -1,7 +1,7 @@
 #include <commandInterpreter.h>
 #include <usrlib.h>
 
-#define USER_INPUT_SIZE 50
+#define USER_INPUT_SIZE 30
 #define INPUT_MESSAGE "Shell: $>"
 #define MAX_ARGUMENTS_SIZE 5
 #define MAX_FUNCTIONS 20
