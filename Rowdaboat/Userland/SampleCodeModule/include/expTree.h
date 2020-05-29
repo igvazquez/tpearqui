@@ -1,14 +1,15 @@
-// #ifndef __EXPTREE_H__
-// #define __EXPTREE_H__
+#ifndef __EXPTREE_H__
+#define __EXPTREE_H__
 
-#define NUMBER_LENGTH 19
+#define INT_LENGTH 10
 
 struct Node
 {
-    char value[NUMBER_LENGTH];
+    char value[INT_LENGTH + 2];
     struct Node *left, *right;
 };
 
 void calculate(char *exp);
+void printCalcRules();
 
-// #endif
+#endif

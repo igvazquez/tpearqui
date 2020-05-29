@@ -18,11 +18,11 @@
 static int isOperator(char c);
 
 static int getNumber(char *exp, char *buffer);
-static int operate(struct Node *node, float *num);
+static int operate(struct Node *node, double *num);
 static int buildExpression(struct Node **node, char *exp);
 static int buildExpressionRec(struct Node **node, char *exp, int *counter);
-static void strToFloat(char *s, float *num);
-void ftoa(float n, char *res, int afterpoint);
+static void strToFloat(char *s, double *num);
+void ftoa(double n, char *res, int afterpoint);
 static void printResult(struct Node *root, char *exp);
 int intToStr(int x, char str[], int d);
 void reverse(char *str, int len);
@@ -41,7 +41,7 @@ static int isOperator(char c)
     return FALSE;
 }
 
-static int overflowOpCheck(char op, float a, float b)
+static int overflowOpCheck(char op, double a, double b)
 {
     if (isOperator(op))
     {
@@ -66,9 +66,20 @@ static int overflowOpCheck(char op, float a, float b)
     }
     return -1;
 }
+void printCalcRules()
+{
+    println("Welcome to the calculator!");
+    println("Rules:");
+    println("1) Available operators: +, -, *, %");
+    print("2) Maximum number supported: +-");
+    printint(INT_MAX);
+    putchar('\n');
+    println("3) Cover every bynary operation with parenthesis.\nFor example: (1+(2*3))");
+}
 
 void calculate(char *exp)
 {
+
     if (*exp == '\n' || *exp == ' ' || *exp == '\0')
     {
         return;
@@ -81,7 +92,10 @@ void calculate(char *exp)
     {
         printError(result);
     }
-    printResult(root, exp);
+    else
+    {
+        printResult(root, exp);
+    }
 }
 
 static void printError(int code)
@@ -108,17 +122,17 @@ static void printError(int code)
 static void printResult(struct Node *root, char *exp)
 {
 
-    println("PRINT RESULT");
-    float res = 0;
+    double res = 0;
     int result = operate(root, &res);
+
     if (result != TRUE)
     {
-        println("overflow");
+
         printError(result);
     }
     else
     {
-        char str[20];
+        char str[INT_LENGTH];
         ftoa(res, str, 4);
         print(exp);
         print(" = ");
@@ -162,9 +176,7 @@ static int buildExpressionRec(struct Node **node, char *exp, int *counter)
 
             if (isOperator(exp[*counter]))
             {
-                print("Operator: ");
-                putchar(exp[*counter]);
-                putchar('\n');
+
                 ((*node)->value)[0] = exp[*counter];
                 ((*node)->value)[1] = '\0';
                 *counter = *counter + 1;
@@ -172,7 +184,6 @@ static int buildExpressionRec(struct Node **node, char *exp, int *counter)
             else
             {
 
-                println("ERROR OPERATOR");
                 return SYNTAX_ERR;
             }
             struct Node *right;
@@ -191,7 +202,7 @@ static int buildExpressionRec(struct Node **node, char *exp, int *counter)
             }
             else
             {
-                println("ERROR )");
+
                 return SYNTAX_ERR;
             }
         }
@@ -201,12 +212,7 @@ static int buildExpressionRec(struct Node **node, char *exp, int *counter)
             if (result)
             {
 
-                print("value: ");
-                println((*node)->value);
                 *counter = *counter + (strlen((*node)->value));
-                print("Counter: ");
-                printint(*counter);
-                putchar('\n');
 
                 (*node)->left = (*node)->right = NULL;
             }
@@ -228,18 +234,16 @@ static int getNumber(char *exp, char *buffer)
     int res = TRUE;
     int i = 0;
     char c;
+    int limit = INT_LENGTH;
     if (*exp == '-')
     {
         negative = TRUE;
         buffer[i++] = '-';
         exp++;
+        limit += 1; // Because we add '-'
     }
-    while (res == TRUE && i <= NUMBER_LENGTH && (((c = *exp++) >= '0' && c <= '9') || c == '.'))
+    while (res == TRUE && (((c = *exp++) >= '0' && c <= '9') || c == '.') && (i < limit))
     {
-        if ((negative == TRUE && i > 10) || (negative == FALSE && i > 9))
-        {
-            return INT_OVERFLOW_ERR;
-        }
 
         if (c == '.')
         {
@@ -257,24 +261,42 @@ static int getNumber(char *exp, char *buffer)
 
         buffer[i++] = c;
     }
-    if ((c != ')' && isOperator(c) != TRUE) || i > NUMBER_LENGTH)
+
+    if (res == TRUE)
     {
 
-        res = FALSE;
-    }
-    else
-    {
-        buffer[i] = '\0';
-    }
+        if ((c != ')' && isOperator(c) != TRUE))
+        {
 
-    if (res)
-    {
+            if (i == limit && c >= '0' && c <= '9')
+            {
+
+                res = INT_OVERFLOW_ERR;
+            }
+            else
+            {
+
+                res = SYNTAX_ERR;
+            }
+        }
+        else
+        {
+            buffer[i] = '\0';
+            double num;
+            strToFloat(buffer, &num);
+            long long aux = (long long)num;
+            if (aux < INT_MIN || aux > INT_MAX)
+            {
+
+                res = INT_OVERFLOW_ERR;
+            }
+        }
     }
 
     return res;
 }
 
-static void strToFloat(char *s, float *num)
+static void strToFloat(char *s, double *num)
 {
 
     int decimal = FALSE;
@@ -301,7 +323,7 @@ static void strToFloat(char *s, float *num)
         }
         else
         {
-            float dec = *s - '0';
+            double dec = *s - '0';
 
             *num = *num + dec / multDec;
             multDec *= 10;
@@ -349,7 +371,7 @@ int intToStr(int x, char str[], int d)
     return i;
 }
 
-void ftoa(float n, char *res, int afterpoint)
+void ftoa(double n, char *res, int afterpoint)
 {
 
     if (n < 0)
@@ -361,12 +383,9 @@ void ftoa(float n, char *res, int afterpoint)
     }
     int ipart = (int)n;
 
-    float fpart = n - (float)ipart;
+    double fpart = n - (double)ipart;
 
     int i = intToStr(ipart, res, 0);
-    print("i: ");
-    printint(i);
-    putchar('\n');
 
     if (afterpoint != 0)
     {
@@ -406,9 +425,7 @@ void ftoa(float n, char *res, int afterpoint)
         {
             i++;
         }
-        print("fpart: ");
-        printint((int)fpart);
-        putchar('\n');
+
         if (fpart > 0)
         {
             intToStr((int)fpart, res + i, afterpoint);
@@ -416,15 +433,13 @@ void ftoa(float n, char *res, int afterpoint)
     }
 }
 
-static int operate(struct Node *node, float *res)
+static int operate(struct Node *node, double *res)
 {
-    print("OPERO: ");
-    println(node->value);
+
     if (node->left == NULL || node->right == NULL)
     {
-        println("es hoja");
+
         strToFloat(node->value, res);
-        println("strToFloat");
     }
     else
     {
@@ -432,7 +447,7 @@ static int operate(struct Node *node, float *res)
         print("op: ");
         putchar(op);
         putchar('\n');
-        float left = 0, right = 0;
+        double left = 0, right = 0;
         operate(node->left, &left);
         print("LEFT: ");
         printint((int)left);
@@ -447,6 +462,7 @@ static int operate(struct Node *node, float *res)
             if (!overflowOpCheck(op, left, right))
             {
                 *res = left + right;
+
                 return TRUE;
             }
             return INT_OVERFLOW_ERR;
