@@ -1,16 +1,20 @@
 #include <screenDriver.h>
 
+#define LEFT 0
+#define RIGHT 1
+
 unsigned int cursorPosX = 0;
 unsigned int cursorPosY = 0;
 unsigned int screenWidth;
 unsigned int screenHeight;
 
+unsigned int currentScreen = LEFT;
+
 static int parseSpecialCharacter(char c, unsigned int background);
 static void backspace(unsigned int background);
 static void enter(unsigned int background);
 static void scrollDownOnce(unsigned int background);
-static int getXInitialPos(int cursorX);
-static int getScreenId(int cursorX);
+static int getXInitialPos(unsigned int screenId);
 
 void putchar(char c)
 {
@@ -42,20 +46,19 @@ void putcharf(char c, unsigned int font, unsigned int background)
         scrollDownOnce(background);
 
     int charSize = getCharSize();
-    drawChar(cursorPosX * CHAR_WIDTH * charSize, cursorPosY * CHAR_HEIGHT *charSize, c, font, background);
+    drawChar(cursorPosX * CHAR_WIDTH * charSize, cursorPosY * CHAR_HEIGHT * charSize, c, font, background);
 
     cursorPosX++;
-    if (cursorPosX == screenWidth/2)
+    if (cursorPosX == screenWidth / 2)
     {
         cursorPosX = 0;
         cursorPosY++;
     }
     else if (cursorPosX >= screenWidth)
     {
-        cursorPosX = screenWidth/2 + 1;
+        cursorPosX = screenWidth / 2 + 1;
         cursorPosY++;
     }
-    
 }
 
 //Se encarga de interpretar caractere de movimiento de cursor. Realizar un salto de
@@ -105,22 +108,39 @@ void printStringf(char *string, unsigned int font, unsigned int background)
     }
 }
 
-int getScreenId(int cursorX)
+int getXInitialPos(unsigned int screenId)
 {
-    if (cursorX >= 0 && cursorX <= screenWidth / 2 - 1)
+    switch (screenId)
     {
+    case LEFT:
+
         return 0;
-    }
-    else
-    {
-        return 1;
+        break;
+    case RIGHT:
+        return screenWidth / 2 + 1;
+
+    default:
+        return -1;
+        break;
     }
 }
 
-int getXInitialPos(int cursorX)
+int setScreen(unsigned int id)
 {
-    int screenId = getScreenId(cursorPosX);
-    return screenId == 0 ? 0 : screenWidth / 2 + 1;
+    switch (id)
+    {
+    case LEFT:
+        setCursorPos(0, screenHeight - 1);
+        currentScreen = LEFT;
+        break;
+    case RIGHT:
+        setCursorPos(screenWidth / 2 + 1, screenHeight - 1);
+        currentScreen = RIGHT;
+    default:
+        return 0;
+        break;
+    }
+    return 1;
 }
 
 //Cuando se esta escribiendo en la ultima linea de la pantalla y se quiere pasar a la proxima
@@ -129,9 +149,9 @@ int getXInitialPos(int cursorX)
 
 static void scrollDownOnce(unsigned int background)
 {
-    int screenId = getScreenId(cursorPosX);
-    int xLimit = screenId == 0 ? horPixelCount() / 2 : horPixelCount();
-    int x = getXInitialPos(cursorPosX);
+
+    int xLimit = currentScreen == 0 ? horPixelCount() / 2 : horPixelCount();
+    int x = getXInitialPos(currentScreen);
     for (int j = 0; j < verPixelCount() - CHAR_HEIGHT; j++)
     {
         for (int i = x * CHAR_WIDTH; i < xLimit; i++)
@@ -154,7 +174,7 @@ void clearScreen()
     int x = cursorPosX;
     int y = cursorPosY;
 
-    setCursorPos(getXInitialPos(cursorPosX), 0);
+    setCursorPos(getXInitialPos(currentScreen), 0);
     for (int j = 0; j < screenHeight * (screenWidth / 2); j++)
         putchar(' ');
 
@@ -168,24 +188,24 @@ static void enter(unsigned int background)
     else
     {
 
-        setCursorPos(getXInitialPos(cursorPosX), cursorPosY + 1);
+        setCursorPos(getXInitialPos(currentScreen), cursorPosY + 1);
     }
 }
 
 static void backspace(unsigned int background)
 {
-    int screenId = getScreenId(cursorPosX);
+
     int charSize = getCharSize();
-    if ((screenId == 0 && cursorPosX == 0 && cursorPosY == 0) || (screenId == 1 && cursorPosX == screenWidth / 2 && cursorPosY == 0))
+    if ((currentScreen == 0 && cursorPosX == 0 && cursorPosY == 0) || (currentScreen == 1 && cursorPosX == screenWidth / 2 && cursorPosY == 0))
     {
         return;
     }
 
-    if ((screenId == 0 && cursorPosX == 0) || (screenId == 1 && cursorPosX == screenWidth / 2))
+    if ((currentScreen == 0 && cursorPosX == 0) || (currentScreen == 1 && cursorPosX == screenWidth / 2))
         drawChar(cursorPosX * CHAR_WIDTH * charSize, cursorPosY * CHAR_HEIGHT * charSize, ' ', 0, background);
     else
     {
-        drawChar((cursorPosX - 1) * CHAR_WIDTH * charSize, cursorPosY * CHAR_HEIGHT *charSize, ' ', 0, background);
+        drawChar((cursorPosX - 1) * CHAR_WIDTH * charSize, cursorPosY * CHAR_HEIGHT * charSize, ' ', 0, background);
         setCursorPos(cursorPosX - 1, cursorPosY);
     }
 }
