@@ -26,10 +26,6 @@ void startShell()
 
 static void startTerminal()
 {
-    //Se cargan los modulos
-
-    //clearScreen();
-
     //start calculator
     setScreen(RIGHT);
     initCalc();
@@ -52,17 +48,9 @@ static int readUserInput()
 
     while ((c = getChar()))
     {
-        // //Parpadeo del cursor.
-        // currentTimerTick = getTicksElapsed();
-        // if (currentTimerTick != lastTimerTick && currentTimerTick % 10 == 0)
-        // {
-        //     tickCursor();
-        //     lastTimerTick = currentTimerTick;
-        // }
         //Procesado de la tecla presionada
         if (c)
         {
-            // turnOffCursor();
 
             if (c == END_OF_EXECUTION_KEY)
                 return 0;
@@ -99,7 +87,6 @@ static int readUserInput()
         }
     }
 
-    // turnOffCursor();
 
     return 1;
 }
