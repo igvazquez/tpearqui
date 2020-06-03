@@ -337,6 +337,7 @@ static void triggerException6(int argcount, char *args[])
 static void cpu()
 {
     char *result;
+    result = 0;
     cpuVendor( result);
     println(result);
 }
