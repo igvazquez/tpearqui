@@ -221,6 +221,6 @@ static void backspace(unsigned int background)
     else
     {
         drawChar((cursorPosX - 1) * CHAR_WIDTH * charSize, cursorPosY * CHAR_HEIGHT * charSize, ' ', 0, background);
-        setCursorPos(cursorPosX - 1, cursorPosY);
+        setCursorPos(cursorPosX - getXInitialPos(currentScreen) - 1, cursorPosY);
     }
 }
