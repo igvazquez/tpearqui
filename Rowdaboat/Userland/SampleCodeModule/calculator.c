@@ -9,12 +9,15 @@
 #define MAX_NODES 30
 #define VALID_CHARS_CALC 19
 #define INPUT_MESSAGE "Calc: $>"
+
 #define USER_INPUT_SIZE 55
+#define EPSILON 0.0000000001
 //Errors
 #define INT_OVERFLOW_ERR 2
 #define SYNTAX_ERR 3
 #define MATH_ERROR 4
 #define EXP_LENGTH_ERR 4
+#define DIV_BY_ZERO 5
 
 //Func Definitions
 static int isOperator(char c);
@@ -32,6 +35,8 @@ static void calculate(char *exp);
 static int isValid(char c);
 static void enter();
 static void erase();
+int divisionByZeroCheck(double right);
+void fabs(double * num);
 //variables
 struct Node nodes[MAX_NODES];
 static int node_count = 0;
@@ -65,16 +70,15 @@ void processCalcInput(char c)
             {
                 erase();
             }
+            else if (c == '=')
+            {
+                enter();
+            }
             else
             {
                 calcBuffer[calcIndex++] = c;
 
                 putchar(c);
-
-                if (c == '=')
-                {
-                    enter();
-                }
             }
         }
     }
@@ -151,11 +155,14 @@ static int overflowOpCheck(char op, double a, double b)
 
             break;
         case '%':
-            return a > INT_MAX * b;
+            if (divisionByZeroCheck(b))
+                return DIV_BY_ZERO;
+            else
+                return a > INT_MAX * b;
             break;
         }
     }
-    return -1;
+    return INT_OVERFLOW_ERR;
 }
 void printCalcRules()
 {
@@ -205,6 +212,9 @@ static void printError(int code)
     case EXP_LENGTH_ERR:
         printf("Math error: expression is too long\n", PINK, 0);
         break;
+    case DIV_BY_ZERO:
+        printf("Division by zero error\n", PINK, 0);
+        break;
     default:
 
         break;
@@ -235,7 +245,16 @@ static void printResult(struct Node *root, char *exp)
 static int buildExpression(struct Node **node, char *exp)
 {
     int counter = 0;
-    return buildExpressionRec(node, exp, &counter);
+    parentesis = 0;
+    int result = buildExpressionRec(node, exp, &counter);
+    if (result == TRUE && exp[counter] != '\0')
+    {
+        return SYNTAX_ERR;
+    }
+    
+    return result;
+    
+    
 }
 
 static int buildExpressionRec(struct Node **node, char *exp, int *counter)
@@ -538,6 +557,8 @@ static int operate(struct Node *node, double *res)
 
         operate(node->right, &right);
 
+        int error;
+        char DEBUG[20]; 
         switch (op)
         {
         case '+':
@@ -568,12 +589,13 @@ static int operate(struct Node *node, double *res)
 
             break;
         case '%':
-            if (!overflowOpCheck(op, left, right))
+            if (!(error = overflowOpCheck(op, left, right)))
             {
                 *res = left / right;
                 return TRUE;
             }
-            return INT_OVERFLOW_ERR;
+            // error = divisionByZeroCheck(right) == 0 ? INT_OVERFLOW_ERR : DIV_BY_ZERO;
+            return error;
 
             break;
         default:
@@ -581,4 +603,18 @@ static int operate(struct Node *node, double *res)
             break;
         }
     }
+}
+
+int divisionByZeroCheck(double right){
+    fabs(&right); // No cambia al right original ya que se le esta pasando una copia
+    if (right < EPSILON)
+    {
+        return DIV_BY_ZERO;
+    }
+    return FALSE;
+}
+
+void fabs(double * num){
+    if (num < 0)
+        *num = *num * -1;
 }

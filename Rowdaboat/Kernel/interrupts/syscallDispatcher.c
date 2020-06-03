@@ -48,6 +48,9 @@ uint64_t syscallDispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rc
 		//int setScreen(unsigned int id);
 		setScreen(rsi);
 		break;
+	case 10:
+		//extern char *cpuVendor( char *result);
+		return cpuVendor(rsi);
 	}
 	return 0;
 }

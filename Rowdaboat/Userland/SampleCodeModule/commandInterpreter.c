@@ -35,6 +35,10 @@ static void triggerException6(int argcount, char *args[]);
 //Imprime los ticks actuales.
 static void ticksElpased(int argcount, char *args[]);
 
+//cpuVendor: imprime el modelo de la cpu
+extern char *cpuVendor( char *result);
+static void cpu();
+
 //printArgs: funcion demostrativa del parseado de argumentos.
 // Imprime todos los argumentos que recibe.
 static void printArgs(int argcount, char *args[]);
@@ -166,6 +170,7 @@ static void loadFunctions()
     loadFunction("printmem", &printmem, "Makes a 32 Bytes memory dump to screen from the address passed by argument.\nAddress in hexadecimal and 0 is not valid.\n");
     loadFunction("triggerException0", &triggerException0, "Triggers Exception number 0 \n");
     loadFunction("triggerException6", &triggerException6, "Triggers Exception number 6 \n");
+    loadFunction("cpuVendor", &cpu, "gets cpu information \n");
 }
 
 static void loadFunction(char *string, void (*fn)(), char *desc)
@@ -302,7 +307,14 @@ static void printmem(int argcount, char *args[])
         for (int j = 0; j < 8; j++)
         {
             uintToBase(*(address + 8 * i + j), buffer, 16);
-            print(buffer);
+
+            if (buffer[1] == 0){
+                putchar('0');
+                print(buffer);
+            }else{
+                print(buffer);
+            }
+    
             putchar(' ');
         }
         putchar('\n');
@@ -320,4 +332,11 @@ static void triggerException0(int argcount, char *args[])
 static void triggerException6(int argcount, char *args[])
 {
     __asm__("ud2"); //https://mudongliang.github.io/x86/html/file_module_x86_id_318.html
+}
+
+static void cpu()
+{
+    char *result;
+    cpuVendor( result);
+    println(result);
 }

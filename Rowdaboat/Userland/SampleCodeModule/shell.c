@@ -28,20 +28,6 @@ static void startTerminal();
 
 void startShell()
 {
-
-    //clearScreen();
-
-    // char selector = 'b';
-    // setCursorPos(12, 3);
-    // setSize(4);
-    // printf("TPE DE PC \n \n \n \n \n", 0xFF44FF, 0);
-    // setSize(2);
-    // printf("    legajo, Vazquez     59489, Torrusio     legajo, Monaco \n \n", 0x5CFEE4, 0);
-
-    // printf("                    0)Terminal  1)Calculadora", 0x5CFEE4, 0);
-    // setSize(1);
-    // while (((selector = getChar()) != '0') && (selector != '1'))
-    //     ;
     startTerminal();
 }
 
