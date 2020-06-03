@@ -7,10 +7,8 @@
 #define SHELLS 2
 
 #define END_OF_EXECUTION_KEY 27
-#define CURSOR_COLOR 0x00FF00
 
 static int currentScreen = LEFT;
-
 
 //End
 //Protoripos
@@ -92,4 +90,3 @@ static int readUserInput()
 
     return 1;
 }
-
