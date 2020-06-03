@@ -11,17 +11,12 @@
 
 static int currentScreen = LEFT;
 
-static int cursorTick = 0;
 
 //End
 //Protoripos
 
 //Funciones utilizadas para la operacion de la shell.
 static int readUserInput();
-
-//Funciones auxiliares para tener un cursor parpadeante.
-static void tickCursor();
-static void turnOffCursor();
 
 //Modulos adicionales
 static void startTerminal();
@@ -33,10 +28,6 @@ void startShell()
 
 static void startTerminal()
 {
-    //Se cargan los modulos
-
-    //clearScreen();
-
     //start calculator
     setScreen(RIGHT);
     initCalc();
@@ -56,22 +47,12 @@ static void startTerminal()
 static int readUserInput()
 {
     char c;
-    int currentTimerTick;
-    int lastTimerTick = -1;
 
     while ((c = getChar()))
     {
-        // //Parpadeo del cursor.
-        // currentTimerTick = getTicksElapsed();
-        // if (currentTimerTick != lastTimerTick && currentTimerTick % 10 == 0)
-        // {
-        //     tickCursor();
-        //     lastTimerTick = currentTimerTick;
-        // }
         //Procesado de la tecla presionada
         if (c)
         {
-            // turnOffCursor();
 
             if (c == END_OF_EXECUTION_KEY)
                 return 0;
@@ -108,24 +89,7 @@ static int readUserInput()
         }
     }
 
-    // turnOffCursor();
 
     return 1;
 }
 
-static void tickCursor()
-{
-    if (cursorTick)
-        putchar('\b');
-    else
-        putcharf(' ', 0, CURSOR_COLOR);
-
-    cursorTick = !cursorTick;
-}
-
-static void turnOffCursor()
-{
-    if (cursorTick)
-        putchar('\b');
-    cursorTick = 0;
-}
