@@ -9,7 +9,7 @@
 #define MAX_NODES 30
 #define VALID_CHARS_CALC 19
 #define INPUT_MESSAGE "Calc: $>"
-#define USER_INPUT_SIZE 119
+#define USER_INPUT_SIZE 55
 //Errors
 #define INT_OVERFLOW_ERR 2
 #define SYNTAX_ERR 3
@@ -42,6 +42,7 @@ char validChars[VALID_CHARS_CALC] = {'=', '.', '+', '-', '*', '%', '(', ')', '0'
 
 void initCalc()
 {
+    setCursorPos(0, getScreenHeight() - 1);
     printCalcRules();
     printf(INPUT_MESSAGE, 0x5CFEE4, 0);
     loadCalcScreen();
@@ -50,7 +51,7 @@ void initCalc()
 void loadCalcScreen()
 {
 
-    setCursorPos(getScreenWidth() / 2 + 1 + strlen(INPUT_MESSAGE) + calcIndex, getScreenHeight() - 1);
+    setCursorPos(strlen(INPUT_MESSAGE) + calcIndex, getScreenHeight() - 1);
 }
 
 void processCalcInput(char c)
@@ -67,7 +68,9 @@ void processCalcInput(char c)
             else
             {
                 calcBuffer[calcIndex++] = c;
+
                 putchar(c);
+
                 if (c == '=')
                 {
                     enter();

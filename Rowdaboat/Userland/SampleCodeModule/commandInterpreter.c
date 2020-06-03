@@ -1,7 +1,7 @@
 #include <commandInterpreter.h>
 #include <usrlib.h>
 
-#define USER_INPUT_SIZE 119
+#define USER_INPUT_SIZE 55
 #define INPUT_MESSAGE "Shell: $>"
 #define MAX_ARGUMENTS_SIZE 5
 #define MAX_FUNCTIONS 20
@@ -56,7 +56,9 @@ static int index = 0;
 
 void initCommandInt()
 {
+    setCursorPos(0, getScreenHeight() - 1);
     loadFunctions();
+
     printCommandIntStart();
     printf(INPUT_MESSAGE, 0x5CFEE4, 0);
     loadCommIntScreen();

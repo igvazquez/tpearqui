@@ -74,14 +74,13 @@ void printint(uint64_t value)
 
 void clearScreen()
 {
-	setCursorPos(0, 0);
 	for (int i = 0; i < getScreenWidth() * getScreenHeight(); i++)
 		putchar(' ');
 }
 
 int getScreenWidth()
 {
-	return horizontalPixelCount() / CHAR_WIDTH;
+	return horizontalPixelCount() / (2 * CHAR_WIDTH);
 }
 
 int getScreenHeight()

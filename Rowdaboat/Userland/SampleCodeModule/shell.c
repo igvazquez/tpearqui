@@ -29,7 +29,7 @@ static void startTerminal();
 void startShell()
 {
 
-    clearScreen();
+    //clearScreen();
 
     // char selector = 'b';
     // setCursorPos(12, 3);
@@ -49,22 +49,16 @@ static void startTerminal()
 {
     //Se cargan los modulos
 
-    clearScreen();
+    //clearScreen();
 
     //start calculator
     setScreen(RIGHT);
     initCalc();
     loadCalcScreen();
-
     //start shell command terminal
     setScreen(LEFT);
     initCommandInt();
     loadCommIntScreen();
-
-    for (int i = 0; i < verticalPixelCount(); i++)
-    {
-        drawPixel(horizontalPixelCount() / 2, i, 0x2b66cc);
-    }
 
     while (readUserInput())
         ;
@@ -98,6 +92,7 @@ static int readUserInput()
 
             if (c == '\t')
             {
+
                 if (currentScreen == LEFT)
                 {
                     setScreen(RIGHT);
