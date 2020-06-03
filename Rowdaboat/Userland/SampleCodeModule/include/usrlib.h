@@ -88,4 +88,7 @@ extern void setSize(int size);
 //syscall 9
 extern int setScreen(unsigned int id);
 
+//syscall 10
+extern char *cpuVendor( char *result);
+
 #endif

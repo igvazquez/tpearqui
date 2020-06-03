@@ -12,6 +12,7 @@ GLOBAL horizontalPixelCount
 GLOBAL getTime
 GLOBAL setSize
 GLOBAL setScreen
+GLOBAL cpuVendor
 
 
 %macro pushState 0
@@ -91,3 +92,8 @@ setSize:
 
 setScreen:
 	sysCaller 9
+
+cpuVendor:
+	sysCaller 10
+
+
