@@ -96,4 +96,9 @@ setScreen:
 cpuVendor:
 	sysCaller 10
 
+getTemp:
+	sysCaller 11
+
+
+
 
