@@ -24,17 +24,31 @@ void putchar(char c)
 void init_screen()
 {
     init_VM_Driver();
+
     screenWidth = horPixelCount() / CHAR_WIDTH;
     screenHeight = verPixelCount() / CHAR_HEIGHT;
+    for (int i = 0; i < screenHeight * CHAR_HEIGHT; i++)
+    {
+        drawPixel(screenWidth * CHAR_WIDTH / 2, i, 0x2b66cc);
+    }
 }
 
 void setCursorPos(unsigned int x, unsigned int y)
 {
-    if (x < 0 || x >= screenWidth || y < 0 || y >= screenHeight)
+    if (x < 0 || x > screenWidth / 2 || y < 0 || y >= screenHeight)
+    {
         return;
-
-    cursorPosX = x;
-    cursorPosY = y;
+    }
+    if (currentScreen == LEFT)
+    {
+        cursorPosX = x;
+        cursorPosY = y;
+    }
+    else if (currentScreen == RIGHT)
+    {
+        cursorPosX = x + screenWidth / 2 + 1;
+        cursorPosY = y;
+    }
 }
 
 void putcharf(char c, unsigned int font, unsigned int background)
@@ -43,13 +57,14 @@ void putcharf(char c, unsigned int font, unsigned int background)
         return;
 
     if (cursorPosY >= screenHeight)
+
         scrollDownOnce(background);
 
     int charSize = getCharSize();
     drawChar(cursorPosX * CHAR_WIDTH * charSize, cursorPosY * CHAR_HEIGHT * charSize, c, font, background);
 
     cursorPosX++;
-    if (cursorPosX == screenWidth / 2)
+    if (cursorPosX == (screenWidth / 2) - 1)
     {
         cursorPosX = 0;
         cursorPosY++;
@@ -130,12 +145,13 @@ int setScreen(unsigned int id)
     switch (id)
     {
     case LEFT:
-        setCursorPos(0, screenHeight - 1);
+
         currentScreen = LEFT;
+
         break;
     case RIGHT:
-        setCursorPos(screenWidth / 2 + 1, screenHeight - 1);
         currentScreen = RIGHT;
+
     default:
         return 0;
         break;
@@ -149,8 +165,7 @@ int setScreen(unsigned int id)
 
 static void scrollDownOnce(unsigned int background)
 {
-
-    int xLimit = currentScreen == 0 ? horPixelCount() / 2 : horPixelCount();
+    int xLimit = currentScreen == 0 ? horPixelCount() / 2 - CHAR_WIDTH : horPixelCount();
     int x = getXInitialPos(currentScreen);
     for (int j = 0; j < verPixelCount() - CHAR_HEIGHT; j++)
     {
@@ -160,13 +175,13 @@ static void scrollDownOnce(unsigned int background)
         }
     }
 
-    setCursorPos(x, screenHeight - 1);
+    setCursorPos(0, screenHeight - 1);
 
-    for (int i = x; i < xLimit / CHAR_WIDTH; i++)
+    for (int i = 0; i < screenWidth / 2 - 1; i++)
     {
         putcharf(' ', 0, background);
     }
-    setCursorPos(x, screenHeight - 1);
+    setCursorPos(0, screenHeight - 1);
 }
 
 void clearScreen()
@@ -174,7 +189,7 @@ void clearScreen()
     int x = cursorPosX;
     int y = cursorPosY;
 
-    setCursorPos(getXInitialPos(currentScreen), 0);
+    setCursorPos(0, 0);
     for (int j = 0; j < screenHeight * (screenWidth / 2); j++)
         putchar(' ');
 
@@ -188,7 +203,7 @@ static void enter(unsigned int background)
     else
     {
 
-        setCursorPos(getXInitialPos(currentScreen), cursorPosY + 1);
+        setCursorPos(0, cursorPosY + 1);
     }
 }
 
@@ -196,16 +211,16 @@ static void backspace(unsigned int background)
 {
 
     int charSize = getCharSize();
-    if ((currentScreen == 0 && cursorPosX == 0 && cursorPosY == 0) || (currentScreen == 1 && cursorPosX == screenWidth / 2 && cursorPosY == 0))
+    if ((currentScreen == 0 && cursorPosX == 0 && cursorPosY == 0) || (currentScreen == 1 && cursorPosX == screenWidth / 2 + 1 && cursorPosY == 0))
     {
         return;
     }
 
-    if ((currentScreen == 0 && cursorPosX == 0) || (currentScreen == 1 && cursorPosX == screenWidth / 2))
+    if ((currentScreen == 0 && cursorPosX == 0) || (currentScreen == 1 && cursorPosX == screenWidth / 2 + 1))
         drawChar(cursorPosX * CHAR_WIDTH * charSize, cursorPosY * CHAR_HEIGHT * charSize, ' ', 0, background);
     else
     {
         drawChar((cursorPosX - 1) * CHAR_WIDTH * charSize, cursorPosY * CHAR_HEIGHT * charSize, ' ', 0, background);
-        setCursorPos(cursorPosX - 1, cursorPosY);
+        setCursorPos(cursorPosX - getXInitialPos(currentScreen) - 1, cursorPosY);
     }
 }

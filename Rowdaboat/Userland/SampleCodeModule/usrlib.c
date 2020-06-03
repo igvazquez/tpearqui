@@ -77,14 +77,11 @@ void clearScreen()
 	setCursorPos(0, 0);
 	for (int i = 0; i < getScreenWidth()/2 * getScreenHeight(); i++)
 		putchar(' ');
-	setCursorPos(getScreenWidth()/2 + 1, 0);
-	for (int i = 0; i < getScreenWidth()/2 * getScreenHeight(); i++)
-		putchar(' ');
 }
 
 int getScreenWidth()
 {
-	return horizontalPixelCount() / CHAR_WIDTH;
+	return horizontalPixelCount() / (2 * CHAR_WIDTH);
 }
 
 int getScreenHeight()
