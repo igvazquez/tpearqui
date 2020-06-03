@@ -242,7 +242,16 @@ static void printResult(struct Node *root, char *exp)
 static int buildExpression(struct Node **node, char *exp)
 {
     int counter = 0;
-    return buildExpressionRec(node, exp, &counter);
+    parentesis = 0;
+    int result = buildExpressionRec(node, exp, &counter);
+    if (result == TRUE && exp[counter] != '\0')
+    {
+        return SYNTAX_ERR;
+    }
+    
+    return result;
+    
+    
 }
 
 static int buildExpressionRec(struct Node **node, char *exp, int *counter)
