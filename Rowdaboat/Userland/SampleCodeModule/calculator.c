@@ -245,7 +245,6 @@ static void printResult(struct Node *root, char *exp)
 static int buildExpression(struct Node **node, char *exp)
 {
     int counter = 0;
-    parentesis = 0;
     int result = buildExpressionRec(node, exp, &counter);
     if (result == TRUE && exp[counter] != '\0')
     {
