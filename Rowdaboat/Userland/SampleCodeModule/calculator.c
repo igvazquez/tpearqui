@@ -151,16 +151,6 @@ static int isOperator(char c)
 
 static int overflowOpCheck(char op, double a, double b)
 {
-    fabs(&a);
-    if (a > 0)
-    {
-        println("a es mayor a 0");
-    }
-    fabs(&b);
-    if (b > 0)
-    {
-        println("b es mayor a 0");
-    }
 
     if (isOperator(op))
     {
@@ -581,9 +571,9 @@ static int operate(struct Node *node, double *res)
 <<<<<<< HEAD
         int error;
         char DEBUG[20];
-=======
+        == == == =
 >>>>>>> ee9dae2b6b14369d5862a908e519fdb82eaf9c3a
-        switch (op)
+                     switch (op)
         {
         case '+':
             if (!overflowOpCheck(op, left, right))
@@ -645,12 +635,8 @@ int divisionByZeroCheck(double right)
 
 void fabs(double *num)
 {
-<<<<<<< HEAD
-    if (num < 0)
-=======
     if (*num < 0)
     {
->>>>>>> ee9dae2b6b14369d5862a908e519fdb82eaf9c3a
         *num = *num * -1;
     }
 }
