@@ -75,7 +75,7 @@ void printint(uint64_t value)
 void clearScreen()
 {
 	setCursorPos(0, 0);
-	for (int i = 0; i < getScreenWidth()/2 * getScreenHeight(); i++)
+	for (int i = 0; i < getScreenWidth() * getScreenHeight(); i++)
 		putchar(' ');
 }
 
