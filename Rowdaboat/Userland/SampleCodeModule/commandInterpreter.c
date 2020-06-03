@@ -305,7 +305,14 @@ static void printmem(int argcount, char *args[])
         for (int j = 0; j < 8; j++)
         {
             uintToBase(*(address + 8 * i + j), buffer, 16);
-            print(buffer);
+
+            if (buffer[1] == 0){
+                putchar('0');
+                print(buffer);
+            }else{
+                print(buffer);
+            }
+    
             putchar(' ');
         }
         putchar('\n');
