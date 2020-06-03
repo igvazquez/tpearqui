@@ -11,6 +11,8 @@ void * memcpy( void * destination, const void * source, uint64_t length);
 
 extern char *cpuVendor( char *result);
 
+extern char *getTemperature( char *result);
+
 //Funcion proveniente de naiveConsole.
 uint32_t uintToBase( uint64_t value, char * buffer, uint32_t base);
 

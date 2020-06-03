@@ -91,4 +91,6 @@ extern int setScreen(unsigned int id);
 //syscall 10
 extern char *cpuVendor( char *result);
 
+//syscall 11
+extern char *getTemp( char *result);
 #endif

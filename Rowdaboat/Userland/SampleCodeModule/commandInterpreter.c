@@ -39,6 +39,9 @@ static void ticksElpased(int argcount, char *args[]);
 extern char *cpuVendor( char *result);
 static void cpu();
 
+extern char *getTemp( char *result);
+static void temp();
+
 //printArgs: funcion demostrativa del parseado de argumentos.
 // Imprime todos los argumentos que recibe.
 static void printArgs(int argcount, char *args[]);
@@ -171,6 +174,7 @@ static void loadFunctions()
     loadFunction("triggerException0", &triggerException0, "Triggers Exception number 0 \n");
     loadFunction("triggerException6", &triggerException6, "Triggers Exception number 6 \n");
     loadFunction("cpuVendor", &cpu, "gets cpu information \n");
+    loadFunction("cpuTemp", &temp, "gets cpu temperature \n");
 }
 
 static void loadFunction(char *string, void (*fn)(), char *desc)
@@ -339,5 +343,12 @@ static void cpu()
     char *result;
     result = 0;
     cpuVendor( result);
+    println(result);
+}
+static void temp()
+{
+    char *result;
+    result = 0;
+    getTemp( result);
     println(result);
 }
