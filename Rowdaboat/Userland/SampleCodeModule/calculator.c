@@ -41,7 +41,6 @@ struct Node nodes[MAX_NODES];
 static int node_count = 0;
 static char calcBuffer[USER_INPUT_SIZE];
 static int calcIndex = 0;
-static int parentesis = 0;
 char validChars[VALID_CHARS_CALC] = {'=', '.', '+', '-', '*', '%', '(', ')', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '\b'};
 ////////////
 
@@ -244,7 +243,15 @@ static int buildExpression(struct Node **node, char *exp)
 {
     int counter = 0;
     parentesis = 0;
-    return buildExpressionRec(node, exp, &counter);
+    int result = buildExpressionRec(node, exp, &counter);
+    if (result == TRUE && exp[counter] != '\0')
+    {
+        return SYNTAX_ERR;
+    }
+    
+    return result;
+    
+    
 }
 
 static int buildExpressionRec(struct Node **node, char *exp, int *counter)
@@ -259,18 +266,12 @@ static int buildExpressionRec(struct Node **node, char *exp, int *counter)
 
         return EXP_LENGTH_ERR;
     }
-    if(parentesis == 0  && exp[*counter] != '(')
-    {
-        println("parentesis igual a cero y no soy un ( ");
-        return SYNTAX_ERR;
-    }
 
     if (exp[*counter] != '\0')
     {
 
         if (exp[*counter] == '(')
         {
-            parentesis+=1;
             *counter = *counter + 1;
             struct Node *left;
             int leftRes = buildExpressionRec(&left, exp, counter);
@@ -304,7 +305,6 @@ static int buildExpressionRec(struct Node **node, char *exp, int *counter)
 
             if (exp[*counter] == ')')
             {
-                parentesis-=1;
                 *counter = *counter + 1;
                 return TRUE;
             }
