@@ -36,7 +36,7 @@ static int isValid(char c);
 static void enter();
 static void erase();
 int divisionByZeroCheck(double right);
-void fabs(double * num);
+void fabs(double *num);
 //variables
 struct Node nodes[MAX_NODES];
 static int node_count = 0;
@@ -251,10 +251,8 @@ static int buildExpression(struct Node **node, char *exp)
     {
         return SYNTAX_ERR;
     }
-    
+
     return result;
-    
-    
 }
 
 static int buildExpressionRec(struct Node **node, char *exp, int *counter)
@@ -558,7 +556,7 @@ static int operate(struct Node *node, double *res)
         operate(node->right, &right);
 
         int error;
-        char DEBUG[20]; 
+        char DEBUG[20];
         switch (op)
         {
         case '+':
@@ -605,7 +603,8 @@ static int operate(struct Node *node, double *res)
     }
 }
 
-int divisionByZeroCheck(double right){
+int divisionByZeroCheck(double right)
+{
     fabs(&right); // No cambia al right original ya que se le esta pasando una copia
     if (right < EPSILON)
     {
@@ -614,7 +613,8 @@ int divisionByZeroCheck(double right){
     return FALSE;
 }
 
-void fabs(double * num){
+void fabs(double *num)
+{
     if (num < 0)
         *num = *num * -1;
 }
