@@ -13,6 +13,7 @@ GLOBAL getTime
 GLOBAL setSize
 GLOBAL setScreen
 GLOBAL cpuVendor
+GLOBAL getTemp
 
 
 %macro pushState 0

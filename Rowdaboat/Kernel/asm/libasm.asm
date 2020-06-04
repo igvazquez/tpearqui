@@ -57,7 +57,7 @@ getTemp:
 	mov rsp, rbp
 	pop rbp
 	ret
-
+;
 getRtc:
     mov rax, rdi
     out 70h, al
