@@ -201,7 +201,7 @@ static void help(int argcount, char *args[])
             }
         }
         print(args[0]);
-        println(" is not a command. Here is a list of all commands:");
+        printf(" is not a command. Here is a list of all commands:\n", PINK, 0);
     }
 
     for (int i = 0; i < functionsSize; i++)
@@ -248,7 +248,7 @@ static void printCurrentTime(int argcount, char *args[])
         else if (strcmp(args[0], "-s"))
             printTime(SECONDS);
         else
-            print("Wrong argument");
+            printf("Wrong argument\n", PINK, 0);
     }
     putchar('\n');
 }
@@ -285,7 +285,7 @@ static void printmem(int argcount, char *args[])
     char buffer[50];
     if (argcount < 1 || (num = hexstringToInt(args[0])) == 0)
     {
-        println("invalid argument");
+        printf("invalid argument\n", PINK, 0);
         return;
     }
     uint8_t *address = (uint8_t *)num;
