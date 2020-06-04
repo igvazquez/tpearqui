@@ -76,7 +76,8 @@ static void printCommandIntStart()
 
 void loadCommIntScreen()
 {
-
+    setCursorPos(0, getScreenHeight() - 1);
+    printf(INPUT_MESSAGE, 0x5CFEE4, 0);
     setCursorPos(strlen(INPUT_MESSAGE) + index, getScreenHeight() - 1);
 }
 void processCommandInput(char c)
