@@ -86,6 +86,7 @@ static void zero_division(uint64_t *exceptionStackframe)
 	println("Exception 0: Division by 0");
 	printRegs(exceptionStackframe);
 	restartSampleCodeModule(exceptionStackframe);
+	clearScreen();
 }
 
 static void invalid_opcode(uint64_t *exceptionStackframe)
@@ -93,4 +94,5 @@ static void invalid_opcode(uint64_t *exceptionStackframe)
 	println("Exception 6: Invalid Opcode");
 	printRegs(exceptionStackframe);
 	restartSampleCodeModule(exceptionStackframe);
+	clearScreen();
 }

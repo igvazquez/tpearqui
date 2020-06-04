@@ -188,12 +188,17 @@ void clearScreen()
 {
     int x = cursorPosX;
     int y = cursorPosY;
-
+    setScreen(LEFT);
+    setCursorPos(0, 0);
+    for (int j = 0; j < screenHeight * (screenWidth / 2); j++)
+        putchar(' ');
+    setScreen(RIGHT);
     setCursorPos(0, 0);
     for (int j = 0; j < screenHeight * (screenWidth / 2); j++)
         putchar(' ');
 
     setCursorPos(x, y);
+    
 }
 
 static void enter(unsigned int background)
