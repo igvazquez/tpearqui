@@ -31,9 +31,6 @@ static void help(int argcount, char *args[]);
 static void triggerException0(int argcount, char *args[]);
 static void triggerException6(int argcount, char *args[]);
 
-//ticksElpased: funcion demostrativa de la syscall 0.
-//Imprime los ticks actuales.
-static void ticksElpased(int argcount, char *args[]);
 
 //cpuVendor: imprime el modelo de la cpu
 extern char *cpuVendor( char *result);
@@ -164,7 +161,6 @@ static void processInstruction(char *instruction)
 static void loadFunctions()
 {
     loadFunction("inforeg", &getRegs, "Prints all the registers \n");
-    loadFunction("ticks", &ticksElpased, "Prints ticks elapsed from start. Arg: -s for seconds elapsed \n");
     loadFunction("printArgs", &printArgs, "Prints all its arguments\n ");
     loadFunction("help", &help, "Prints the description of all functions \n");
     loadFunction("clock", &printCurrentTime, "Prints the current time. Args: -h prints current hours.  -m prints current minutes.  -s prints current seconds.\n");
@@ -182,15 +178,6 @@ static void loadFunction(char *string, void (*fn)(), char *desc)
     functionsSize++;
 }
 
-//Modulos
-static void ticksElpased(int argcount, char *args[])
-{
-    if (strcmp(args[0], "-s"))
-        printint(getTicksElapsed() / 18);
-    else
-        printint(getTicksElapsed());
-    putchar('\n');
-}
 
 static void printArgs(int argcount, char *args[])
 {

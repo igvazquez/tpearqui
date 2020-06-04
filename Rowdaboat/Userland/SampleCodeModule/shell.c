@@ -16,15 +16,9 @@ static int currentScreen = LEFT;
 //Funciones utilizadas para la operacion de la shell.
 static int readUserInput();
 
-//Modulos adicionales
-static void startTerminal();
+
 
 void startShell()
-{
-    startTerminal();
-}
-
-static void startTerminal()
 {
     //start calculator
     setScreen(RIGHT);
@@ -38,6 +32,7 @@ static void startTerminal()
     while (readUserInput())
         ;
 }
+
 
 //Funcion encargada de la lectura del texto ingresado por el usuario.
 //Se encarga de guardarlo en un buffer para luego ser procesado. Maneja borrado,
