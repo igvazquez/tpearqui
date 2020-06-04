@@ -568,12 +568,8 @@ static int operate(struct Node *node, double *res)
 
         operate(node->right, &right);
 
-<<<<<<< HEAD
-        int error;
-        char DEBUG[20];
-        == == == =
->>>>>>> ee9dae2b6b14369d5862a908e519fdb82eaf9c3a
-                     switch (op)
+
+        switch (op)
         {
         case '+':
             if (!overflowOpCheck(op, left, right))
@@ -600,7 +596,6 @@ static int operate(struct Node *node, double *res)
                 return TRUE;
             }
             return INT_OVERFLOW_ERR;
-
             break;
         case '%':
             if (right == 0)
