@@ -29,10 +29,10 @@ static void startTerminal()
     //start calculator
     setScreen(RIGHT);
     initCalc();
-    loadCalcScreen();
     //start shell command terminal
     setScreen(LEFT);
     initCommandInt();
+    // Start cursor on terminal
     loadCommIntScreen();
 
     while (readUserInput())
@@ -60,12 +60,16 @@ static int readUserInput()
 
                 if (currentScreen == LEFT)
                 {
+                    setCursorPos(0, getScreenHeight() - 1);
+                    printf("Shell: $>", 0xFFFFFF, 0);
                     setScreen(RIGHT);
                     currentScreen = RIGHT;
                     loadCalcScreen();
                 }
                 else if (currentScreen == RIGHT)
                 {
+                    setCursorPos(0, getScreenHeight() - 1);
+                    printf("Calc: $>", 0xFFFFFF, 0);
                     setScreen(LEFT);
                     currentScreen = LEFT;
                     loadCommIntScreen();

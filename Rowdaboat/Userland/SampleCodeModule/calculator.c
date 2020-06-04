@@ -50,13 +50,13 @@ void initCalc()
 {
     setCursorPos(0, getScreenHeight() - 1);
     printCalcRules();
-    printf(INPUT_MESSAGE, 0x5CFEE4, 0);
-    loadCalcScreen();
+    printf(INPUT_MESSAGE, 0xFFFFFF, 0);
 }
 
 void loadCalcScreen()
 {
-
+    setCursorPos(0, getScreenHeight() - 1);
+    printf(INPUT_MESSAGE, 0x5CFEE4, 0);
     setCursorPos(strlen(INPUT_MESSAGE) + calcIndex, getScreenHeight() - 1);
 }
 
