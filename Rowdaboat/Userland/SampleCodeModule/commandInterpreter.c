@@ -31,9 +31,6 @@ static void help(int argcount, char *args[]);
 static void triggerException0(int argcount, char *args[]);
 static void triggerException6(int argcount, char *args[]);
 
-//ticksElpased: funcion demostrativa de la syscall 0.
-//Imprime los ticks actuales.
-static void ticksElpased(int argcount, char *args[]);
 
 //cpuVendor: imprime el modelo de la cpu
 extern char *cpuVendor( char *result);
@@ -76,7 +73,8 @@ static void printCommandIntStart()
 
 void loadCommIntScreen()
 {
-
+    setCursorPos(0, getScreenHeight() - 1);
+    printf(INPUT_MESSAGE, 0x5CFEE4, 0);
     setCursorPos(strlen(INPUT_MESSAGE) + index, getScreenHeight() - 1);
 }
 void processCommandInput(char c)
@@ -163,7 +161,6 @@ static void processInstruction(char *instruction)
 static void loadFunctions()
 {
     loadFunction("inforeg", &getRegs, "Prints all the registers \n");
-    loadFunction("ticks", &ticksElpased, "Prints ticks elapsed from start. Arg: -s for seconds elapsed \n");
     loadFunction("printArgs", &printArgs, "Prints all its arguments\n ");
     loadFunction("help", &help, "Prints the description of all functions \n");
     loadFunction("clock", &printCurrentTime, "Prints the current time. Args: -h prints current hours.  -m prints current minutes.  -s prints current seconds.\n");
@@ -181,15 +178,6 @@ static void loadFunction(char *string, void (*fn)(), char *desc)
     functionsSize++;
 }
 
-//Modulos
-static void ticksElpased(int argcount, char *args[])
-{
-    if (strcmp(args[0], "-s"))
-        printint(getTicksElapsed() / 18);
-    else
-        printint(getTicksElapsed());
-    putchar('\n');
-}
 
 static void printArgs(int argcount, char *args[])
 {
@@ -213,7 +201,7 @@ static void help(int argcount, char *args[])
             }
         }
         print(args[0]);
-        println(" is not a command. Here is a list of all commands:");
+        printf(" is not a command. Here is a list of all commands:\n", PINK, 0);
     }
 
     for (int i = 0; i < functionsSize; i++)
@@ -260,7 +248,7 @@ static void printCurrentTime(int argcount, char *args[])
         else if (strcmp(args[0], "-s"))
             printTime(SECONDS);
         else
-            print("Wrong argument");
+            printf("Wrong argument\n", PINK, 0);
     }
     putchar('\n');
 }
@@ -297,7 +285,7 @@ static void printmem(int argcount, char *args[])
     char buffer[50];
     if (argcount < 1 || (num = hexstringToInt(args[0])) == 0)
     {
-        println("invalid argument");
+        printf("invalid argument\n", PINK, 0);
         return;
     }
     uint8_t *address = (uint8_t *)num;
@@ -337,6 +325,7 @@ static void triggerException6(int argcount, char *args[])
 static void cpu()
 {
     char *result;
+    result = 0;
     cpuVendor( result);
     println(result);
 }

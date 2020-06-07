@@ -7,7 +7,7 @@
 #define TRUE 1
 #define FALSE 0
 #define MAX_NODES 30
-#define VALID_CHARS_CALC 19
+#define VALID_CHARS_CALC 21
 #define INPUT_MESSAGE "Calc: $>"
 
 #define USER_INPUT_SIZE 55
@@ -25,37 +25,38 @@ static int getNumber(char *exp, char *buffer);
 static int operate(struct Node *node, double *num);
 static int buildExpression(struct Node **node, char *exp);
 static int buildExpressionRec(struct Node **node, char *exp, int *counter);
-static void strToFloat(char *s, double *num);
-void ftoa(double n, char *res, int afterpoint);
+static void atod(char *s, double *num);
+void dtoa(double n, char *res, int afterpoint);
 static void printResult(struct Node *root, char *exp);
-int intToStr(int x, char str[], int d);
+int itoa(int x, char str[], int d);
 void reverse(char *str, int len);
 static void printError(int code);
 static void calculate(char *exp);
 static int isValid(char c);
 static void enter();
 static void erase();
+static void emptyBuffer();
 int divisionByZeroCheck(double right);
-void fabs(double * num);
+void fabs(double *num);
 //variables
 struct Node nodes[MAX_NODES];
 static int node_count = 0;
 static char calcBuffer[USER_INPUT_SIZE];
 static int calcIndex = 0;
-char validChars[VALID_CHARS_CALC] = {'=', '.', '+', '-', '*', '%', '(', ')', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '\b'};
+char validChars[VALID_CHARS_CALC] = {'C', 'c', '=', '.', '+', '-', '*', '%', '(', ')', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '\b'};
 ////////////
 
 void initCalc()
 {
     setCursorPos(0, getScreenHeight() - 1);
     printCalcRules();
-    printf(INPUT_MESSAGE, 0x5CFEE4, 0);
-    loadCalcScreen();
+    printf(INPUT_MESSAGE, 0xFFFFFF, 0);
 }
 
 void loadCalcScreen()
 {
-
+    setCursorPos(0, getScreenHeight() - 1);
+    printf(INPUT_MESSAGE, 0x5CFEE4, 0);
     setCursorPos(strlen(INPUT_MESSAGE) + calcIndex, getScreenHeight() - 1);
 }
 
@@ -73,6 +74,10 @@ void processCalcInput(char c)
             else if (c == '=')
             {
                 enter();
+            }
+            else if (c == 'C' || c == 'c')
+            {
+                emptyBuffer();
             }
             else
             {
@@ -92,6 +97,14 @@ void processCalcInput(char c)
         {
             erase();
         }
+    }
+}
+
+static void emptyBuffer()
+{
+    while (calcIndex)
+    {
+        erase();
     }
 }
 
@@ -138,6 +151,7 @@ static int isOperator(char c)
 
 static int overflowOpCheck(char op, double a, double b)
 {
+
     if (isOperator(op))
     {
         switch (op)
@@ -155,10 +169,8 @@ static int overflowOpCheck(char op, double a, double b)
 
             break;
         case '%':
-            if (divisionByZeroCheck(b))
-                return DIV_BY_ZERO;
-            else
-                return a > INT_MAX * b;
+
+            return a > INT_MAX * b;
             break;
         }
     }
@@ -174,6 +186,7 @@ void printCalcRules()
     putchar('\n');
     println("3) Cover every bynary operation with parenthesis.\nFor example: (1+(2*3))");
     println("4) Press '=' to evaluate the expression");
+    println("5) Press 'C' to clear your input");
 }
 
 static void calculate(char *exp)
@@ -235,7 +248,7 @@ static void printResult(struct Node *root, char *exp)
     else
     {
         char str[INT_LENGTH];
-        ftoa(res, str, 4);
+        dtoa(res, str, 4);
         print(exp);
         print(" = ");
         println(str);
@@ -250,10 +263,8 @@ static int buildExpression(struct Node **node, char *exp)
     {
         return SYNTAX_ERR;
     }
-    
+
     return result;
-    
-    
 }
 
 static int buildExpressionRec(struct Node **node, char *exp, int *counter)
@@ -390,7 +401,7 @@ static int getNumber(char *exp, char *buffer)
         {
             buffer[i] = '\0';
             double num;
-            strToFloat(buffer, &num);
+            atod(buffer, &num);
             long long aux = (long long)num;
             if (aux < INT_MIN || aux > INT_MAX)
             {
@@ -403,7 +414,7 @@ static int getNumber(char *exp, char *buffer)
     return res;
 }
 
-static void strToFloat(char *s, double *num)
+static void atod(char *s, double *num)
 {
 
     int decimal = FALSE;
@@ -456,7 +467,7 @@ void reverse(char *str, int len)
     }
 }
 
-int intToStr(int x, char str[], int d)
+int itoa(int x, char str[], int d)
 {
 
     int i = 0;
@@ -478,7 +489,7 @@ int intToStr(int x, char str[], int d)
     return i;
 }
 
-void ftoa(double n, char *res, int afterpoint)
+void dtoa(double n, char *res, int afterpoint)
 {
 
     if (n < 0)
@@ -492,7 +503,7 @@ void ftoa(double n, char *res, int afterpoint)
 
     double fpart = n - (double)ipart;
 
-    int i = intToStr(ipart, res, 0);
+    int i = itoa(ipart, res, 0);
 
     if (afterpoint != 0)
     {
@@ -533,7 +544,7 @@ void ftoa(double n, char *res, int afterpoint)
 
         if (fpart > 0)
         {
-            intToStr((int)fpart, res + i, afterpoint);
+            itoa((int)fpart, res + i, afterpoint);
         }
     }
 }
@@ -544,7 +555,7 @@ static int operate(struct Node *node, double *res)
     if (node->left == NULL || node->right == NULL)
     {
 
-        strToFloat(node->value, res);
+        atod(node->value, res);
         return TRUE;
     }
     else
@@ -556,8 +567,7 @@ static int operate(struct Node *node, double *res)
 
         operate(node->right, &right);
 
-        int error;
-        char DEBUG[20]; 
+
         switch (op)
         {
         case '+':
@@ -585,16 +595,19 @@ static int operate(struct Node *node, double *res)
                 return TRUE;
             }
             return INT_OVERFLOW_ERR;
-
             break;
         case '%':
-            if (!(error = overflowOpCheck(op, left, right)))
+            if (right == 0)
+            {
+                return DIV_BY_ZERO;
+            }
+            if (!overflowOpCheck(op, left, right))
             {
                 *res = left / right;
                 return TRUE;
             }
             // error = divisionByZeroCheck(right) == 0 ? INT_OVERFLOW_ERR : DIV_BY_ZERO;
-            return error;
+            return INT_OVERFLOW_ERR;
 
             break;
         default:
@@ -604,7 +617,8 @@ static int operate(struct Node *node, double *res)
     }
 }
 
-int divisionByZeroCheck(double right){
+int divisionByZeroCheck(double right)
+{
     fabs(&right); // No cambia al right original ya que se le esta pasando una copia
     if (right < EPSILON)
     {
@@ -613,7 +627,10 @@ int divisionByZeroCheck(double right){
     return FALSE;
 }
 
-void fabs(double * num){
-    if (num < 0)
+void fabs(double *num)
+{
+    if (*num < 0)
+    {
         *num = *num * -1;
+    }
 }
