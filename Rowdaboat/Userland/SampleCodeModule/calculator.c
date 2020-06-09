@@ -159,6 +159,8 @@ static int isOperator(char c)
 static int overflowOpCheck(char op, double a, double b)
 {
 
+    fabs(&a);
+    fabs(&b);
     if (isOperator(op))
     {
         switch (op)
@@ -233,7 +235,7 @@ static void printError(int code)
         printf("Math error: expression is too long\n", PINK, 0);
         break;
     case DIV_BY_ZERO:
-        printf("Division by zero error\n", PINK, 0);
+        printf("Math error: Division by zero error\n", PINK, 0);
         break;
     default:
 

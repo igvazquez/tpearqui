@@ -21,46 +21,6 @@ void putchar(char c)
     putcharf(c, DEFAULT_FONT_COLOR, DEFAULT_BACKGROUND_COLOR);
 }
 
-void init_screen()
-{
-    init_VM_Driver();
-
-    screenWidth = horPixelCount() / CHAR_WIDTH;
-    screenHeight = verPixelCount() / CHAR_HEIGHT;
-    for (int i = 0; i < screenHeight * CHAR_HEIGHT; i++)
-    {
-        drawPixel(screenWidth * CHAR_WIDTH / 2, i, 0x2b66cc);
-    }
-}
-
-int getScreenHeight()
-{
-    return screenHeight;
-}
-
-int getScreenWidth()
-{
-    return screenWidth / 2 - 1;
-}
-
-void setCursorPos(unsigned int x, unsigned int y)
-{
-    if (x < 0 || x > screenWidth / 2 || y < 0 || y >= screenHeight)
-    {
-        return;
-    }
-    if (currentScreen == LEFT)
-    {
-        cursorPosX = x;
-        cursorPosY = y;
-    }
-    else if (currentScreen == RIGHT)
-    {
-        cursorPosX = x + screenWidth / 2 + 1;
-        cursorPosY = y;
-    }
-}
-
 void putcharf(char c, unsigned int font, unsigned int background)
 {
     if (parseSpecialCharacter(c, background))
@@ -130,6 +90,46 @@ void printStringf(char *string, unsigned int font, unsigned int background)
     {
         putcharf(*string, font, background);
         string++;
+    }
+}
+
+void init_screen()
+{
+    init_VM_Driver();
+
+    screenWidth = horPixelCount() / CHAR_WIDTH;
+    screenHeight = verPixelCount() / CHAR_HEIGHT;
+    for (int i = 0; i < screenHeight * CHAR_HEIGHT; i++)
+    {
+        drawPixel(screenWidth * CHAR_WIDTH / 2, i, 0x2b66cc);
+    }
+}
+
+int getScreenHeight()
+{
+    return screenHeight;
+}
+
+int getScreenWidth()
+{
+    return screenWidth / 2 - 1;
+}
+
+void setCursorPos(unsigned int x, unsigned int y)
+{
+    if (x < 0 || x > screenWidth / 2 || y < 0 || y >= screenHeight)
+    {
+        return;
+    }
+    if (currentScreen == LEFT)
+    {
+        cursorPosX = x;
+        cursorPosY = y;
+    }
+    else if (currentScreen == RIGHT)
+    {
+        cursorPosX = x + screenWidth / 2 + 1;
+        cursorPosY = y;
     }
 }
 
@@ -208,7 +208,6 @@ void clearScreen()
         putchar(' ');
 
     setCursorPos(x, y);
-    
 }
 
 static void enter(unsigned int background)
