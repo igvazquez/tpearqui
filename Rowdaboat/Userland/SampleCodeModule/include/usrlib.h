@@ -74,10 +74,10 @@ extern char getChar();
 extern void setCursorPos(unsigned int x, unsigned int y);
 
 //syscall 5:
-extern int verticalPixelCount();
+extern int getScreenHeight();
 
 //syscall 6:
-extern int horizontalPixelCount();
+extern int getScreenWidth();
 
 //syscall 7:
 extern uint8_t getTime(uint64_t timeDescriptor);
@@ -89,6 +89,6 @@ extern void setSize(int size);
 extern int setScreen(unsigned int id);
 
 //syscall 10
-extern char *cpuVendor( char *result);
+extern char *cpuVendor(char *result);
 
 #endif

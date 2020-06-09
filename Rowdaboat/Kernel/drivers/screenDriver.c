@@ -33,6 +33,16 @@ void init_screen()
     }
 }
 
+int getScreenHeight()
+{
+    return screenHeight;
+}
+
+int getScreenWidth()
+{
+    return screenWidth / 2 - 1;
+}
+
 void setCursorPos(unsigned int x, unsigned int y)
 {
     if (x < 0 || x > screenWidth / 2 || y < 0 || y >= screenHeight)

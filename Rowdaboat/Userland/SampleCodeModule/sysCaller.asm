@@ -7,8 +7,8 @@ GLOBAL drawPixel
 GLOBAL sysWrite
 GLOBAL getChar
 GLOBAL setCursorPos
-GLOBAL verticalPixelCount
-GLOBAL horizontalPixelCount
+GLOBAL getScreenHeight
+GLOBAL getScreenWidth
 GLOBAL getTime
 GLOBAL setSize
 GLOBAL setScreen
@@ -78,10 +78,10 @@ getChar:
 setCursorPos:
 	sysCaller 4
 
-verticalPixelCount:
+getScreenHeight:
 	sysCaller 5
 
-horizontalPixelCount:
+getScreenWidth:
 	sysCaller 6
 
 getTime:

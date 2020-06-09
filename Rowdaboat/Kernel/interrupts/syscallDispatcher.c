@@ -33,10 +33,10 @@ uint64_t syscallDispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rc
 		break;
 	case 5:
 		//int verPixelCount();
-		return verPixelCount();
+		return getScreenHeight();
 	case 6:
 		//int horPixelCount()
-		return horPixelCount();
+		return getScreenWidth();
 	case 7:
 		//uint8_t getTime(uint64_t timeDescriptor)
 		return getTime(rsi);

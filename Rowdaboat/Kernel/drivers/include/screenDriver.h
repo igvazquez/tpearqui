@@ -34,4 +34,8 @@ void println(char *string);
 //Cambia la screen a la indicada por la id, retorna 1 si la id es correcta, 0 sino.
 int setScreen(unsigned int id);
 
+//Devuelve la altura de la screen
+int getScreenHeight();
+//Devuelve el ancho de la screen
+int getScreenWidht();
 #endif
