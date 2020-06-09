@@ -50,13 +50,13 @@ void initCalc()
 {
     setCursorPos(0, getScreenHeight() - 1);
     printCalcRules();
-    printf(INPUT_MESSAGE, 0x5CFEE4, 0);
-    loadCalcScreen();
+    printf(INPUT_MESSAGE, 0xFFFFFF, 0);
 }
 
 void loadCalcScreen()
 {
-
+    setCursorPos(0, getScreenHeight() - 1);
+    printf(INPUT_MESSAGE, 0x5CFEE4, 0);
     setCursorPos(strlen(INPUT_MESSAGE) + calcIndex, getScreenHeight() - 1);
 }
 
@@ -258,7 +258,6 @@ static void printResult(struct Node *root, char *exp)
 static int buildExpression(struct Node **node, char *exp)
 {
     int counter = 0;
-
     int result = buildExpressionRec(node, exp, &counter);
     if (result == TRUE && exp[counter] != '\0')
     {
@@ -568,6 +567,7 @@ static int operate(struct Node *node, double *res)
 
         operate(node->right, &right);
 
+
         switch (op)
         {
         case '+':
@@ -595,7 +595,6 @@ static int operate(struct Node *node, double *res)
                 return TRUE;
             }
             return INT_OVERFLOW_ERR;
-
             break;
         case '%':
             if (right == 0)
