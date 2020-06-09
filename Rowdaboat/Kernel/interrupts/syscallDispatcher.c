@@ -48,6 +48,9 @@ uint64_t syscallDispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rc
 	case 9:
 		//extern char *cpuVendor( char *result);
 		return cpuVendor(rsi);
+	case 11:
+		//extern char *getTemp( char *result);
+		return getTemp(rsi);
 	}
 	return 0;
 }

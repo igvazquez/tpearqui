@@ -12,6 +12,7 @@ GLOBAL getTime
 GLOBAL setSize
 GLOBAL setScreen
 GLOBAL cpuVendor
+GLOBAL getTemp
 
 
 %macro pushState 0
@@ -93,5 +94,10 @@ setScreen:
 
 cpuVendor:
 	sysCaller 9
+
+getTemp:
+	sysCaller 11
+
+
 
 
