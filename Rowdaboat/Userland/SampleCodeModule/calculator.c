@@ -551,7 +551,7 @@ void dtoa(double n, char *res, int afterpoint)
 
         if (fpart > 0)
         {
-            itoa((int)fpart, res + i, afterpoint);
+            itoa((int)fpart, res + i, afterpoint - cantZeros);
         }
     }
 }
