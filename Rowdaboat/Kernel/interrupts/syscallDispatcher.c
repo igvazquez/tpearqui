@@ -16,41 +16,41 @@ uint64_t syscallDispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rc
 	case 0:
 		//int ticks_elapsed();
 		return ticks_elapsed();
+
 	case 1:
-		//void drawPixel(unsigned int x, unsigned int y, int color);
-		drawPixel(rsi, rdx, rcx);
-		break;
-	case 2:
 		//void printStringf( char * string, unsigned int font, unsigned int background);
 		printStringf((char *)rsi, rdx, rcx);
 		break;
-	case 3:
+	case 2:
 		//char getKey();
 		return getKey();
-	case 4:
+	case 3:
 		//void setCursorPos(unsigned int x, unsigned int y);
 		setCursorPos(rsi, rdx);
 		break;
-	case 5:
+	case 4:
 		//int verPixelCount();
 		return getScreenHeight();
-	case 6:
+	case 5:
 		//int horPixelCount()
 		return getScreenWidth();
-	case 7:
+	case 6:
 		//uint8_t getTime(uint64_t timeDescriptor)
 		return getTime(rsi);
-	case 8:
+	case 7:
 		// void setSize(int size);
 		setSize(rsi);
 		break;
-	case 9:
+	case 8:
 		//int setScreen(unsigned int id);
 		setScreen(rsi);
 		break;
-	case 10:
+	case 9:
 		//extern char *cpuVendor( char *result);
 		return cpuVendor(rsi);
+	case 11:
+		//extern char *getTemp( char *result);
+		return getTemp(rsi);
 	}
 	return 0;
 }

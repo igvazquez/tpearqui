@@ -7,6 +7,7 @@ GLOBAL getRtc
 GLOBAL inb
 GLOBAL outb
 GLOBAL getSP
+GLOBAL getTemp
 
 section .text
 	
@@ -35,6 +36,28 @@ cpuVendor:
 	ret
 ;
 
+getTemp:
+	push rbp
+	mov rbp, rsp
+
+	push rdx
+	push rax
+
+	mov rcx, 0x19C
+	rdmsr
+	
+	mov [rdi], rdx
+	mov [rdi + 4], rax
+
+	mov byte [rdi+8], 0
+	
+	pop rax
+	pop rdx
+
+	mov rsp, rbp
+	pop rbp
+	ret
+;
 getRtc:
     mov rax, rdi
     out 70h, al

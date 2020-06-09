@@ -61,9 +61,6 @@ uint64_t hexstringToInt(char *s);
 //syscall 0:
 extern int getTicksElapsed();
 
-//syscall 1:
-extern void drawPixel(unsigned int x, unsigned int y, int color);
-
 //syscall 2:
 extern void sysWrite(char *string, unsigned int font, unsigned int background);
 
@@ -91,4 +88,6 @@ extern int setScreen(unsigned int id);
 //syscall 10
 extern char *cpuVendor(char *result);
 
+//syscall 11
+extern char *getTemp( char *result);
 #endif

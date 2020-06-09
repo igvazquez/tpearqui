@@ -3,7 +3,6 @@
 SECTION .text
 
 GLOBAL getTicksElapsed
-GLOBAL drawPixel
 GLOBAL sysWrite
 GLOBAL getChar
 GLOBAL setCursorPos
@@ -13,6 +12,7 @@ GLOBAL getTime
 GLOBAL setSize
 GLOBAL setScreen
 GLOBAL cpuVendor
+GLOBAL getTemp
 
 
 %macro pushState 0
@@ -66,34 +66,38 @@ GLOBAL cpuVendor
 getTicksElapsed:
 	sysCaller 0
 
-drawPixel:
-	sysCaller 1
+
 
 sysWrite:
-	sysCaller 2
+	sysCaller 1
 
 getChar:
-	sysCaller 3
+	sysCaller 2
 
 setCursorPos:
-	sysCaller 4
+	sysCaller 3
 
 getScreenHeight:
-	sysCaller 5
+	sysCaller 4
 
 getScreenWidth:
-	sysCaller 6
+	sysCaller 5
 
 getTime:
-	sysCaller 7
+	sysCaller 6
 
 setSize:
-	sysCaller 8
+	sysCaller 7
 
 setScreen:
-	sysCaller 9
+	sysCaller 8
 
 cpuVendor:
-	sysCaller 10
+	sysCaller 9
+
+getTemp:
+	sysCaller 11
+
+
 
 
