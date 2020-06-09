@@ -10,6 +10,7 @@ static void printCommandIntStart();
 static void processInstruction(char *instruction);
 static void loadFunctions();
 static void loadFunction(char *string, void (*fn)(), char *desc);
+void leaveCommandInt();
 //Modulos - Funciones ejecutables desde la shell
 //inforeg: imprimir el valor de todos los registros
 extern void getRegs(int argcount, char *args[]);
@@ -31,9 +32,8 @@ static void help(int argcount, char *args[]);
 static void triggerException0(int argcount, char *args[]);
 static void triggerException6(int argcount, char *args[]);
 
-
 //cpuVendor: imprime el modelo de la cpu
-extern char *cpuVendor( char *result);
+extern char *cpuVendor(char *result);
 static void cpu();
 
 //printArgs: funcion demostrativa del parseado de argumentos.
@@ -54,6 +54,12 @@ static int functionsSize = 0;
 
 static char buffer[USER_INPUT_SIZE];
 static int index = 0;
+
+void leaveCommandInt()
+{
+    setCursorPos(0, getScreenHeight() - 1);
+    printf("Shell: $>", 0xFFFFFF, 0);
+}
 
 void initCommandInt()
 {
@@ -178,7 +184,6 @@ static void loadFunction(char *string, void (*fn)(), char *desc)
     functionsSize++;
 }
 
-
 static void printArgs(int argcount, char *args[])
 {
     for (int i = 0; i < argcount; i++)
@@ -296,13 +301,16 @@ static void printmem(int argcount, char *args[])
         {
             uintToBase(*(address + 8 * i + j), buffer, 16);
 
-            if (buffer[1] == 0){
+            if (buffer[1] == 0)
+            {
                 putchar('0');
                 print(buffer);
-            }else{
+            }
+            else
+            {
                 print(buffer);
             }
-    
+
             putchar(' ');
         }
         putchar('\n');
@@ -326,6 +334,6 @@ static void cpu()
 {
     char *result;
     result = 0;
-    cpuVendor( result);
+    cpuVendor(result);
     println(result);
 }

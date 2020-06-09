@@ -3,5 +3,5 @@
 void loadCommIntScreen();
 void processCommandInput(char c);
 void initCommandInt();
-
+void leaveCommandInt();
 #endif

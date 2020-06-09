@@ -36,6 +36,7 @@ static int isValid(char c);
 static void enter();
 static void erase();
 static void emptyBuffer();
+void leaveCalc();
 int divisionByZeroCheck(double right);
 void fabs(double *num);
 //variables
@@ -45,6 +46,12 @@ static char calcBuffer[USER_INPUT_SIZE];
 static int calcIndex = 0;
 char validChars[VALID_CHARS_CALC] = {'C', 'c', '=', '.', '+', '-', '*', '%', '(', ')', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '\b'};
 ////////////
+
+void leaveCalc()
+{
+    setCursorPos(0, getScreenHeight() - 1);
+    printf("Calc: $>", 0xFFFFFF, 0);
+}
 
 void initCalc()
 {
@@ -566,7 +573,6 @@ static int operate(struct Node *node, double *res)
         operate(node->left, &left);
 
         operate(node->right, &right);
-
 
         switch (op)
         {

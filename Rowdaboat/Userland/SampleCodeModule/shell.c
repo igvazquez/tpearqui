@@ -16,8 +16,6 @@ static int currentScreen = LEFT;
 //Funciones utilizadas para la operacion de la shell.
 static int readUserInput();
 
-
-
 void startShell()
 {
     //start calculator
@@ -32,7 +30,6 @@ void startShell()
     while (readUserInput())
         ;
 }
-
 
 //Funcion encargada de la lectura del texto ingresado por el usuario.
 //Se encarga de guardarlo en un buffer para luego ser procesado. Maneja borrado,
@@ -55,16 +52,14 @@ static int readUserInput()
 
                 if (currentScreen == LEFT)
                 {
-                    setCursorPos(0, getScreenHeight() - 1);
-                    printf("Shell: $>", 0xFFFFFF, 0);
+                    leaveCommandInt();
                     setScreen(RIGHT);
                     currentScreen = RIGHT;
                     loadCalcScreen();
                 }
                 else if (currentScreen == RIGHT)
                 {
-                    setCursorPos(0, getScreenHeight() - 1);
-                    printf("Calc: $>", 0xFFFFFF, 0);
+                    leaveCalc();
                     setScreen(LEFT);
                     currentScreen = LEFT;
                     loadCommIntScreen();
@@ -85,7 +80,6 @@ static int readUserInput()
             }
         }
     }
-
 
     return 1;
 }

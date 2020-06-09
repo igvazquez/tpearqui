@@ -13,5 +13,5 @@ void printCalcRules();
 void processCalcInput(char c);
 void loadCalcScreen();
 void initCalc();
-
+void leaveCalc();
 #endif
