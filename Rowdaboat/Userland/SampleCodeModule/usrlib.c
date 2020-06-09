@@ -79,16 +79,6 @@ void clearScreen()
 		putchar(' ');
 }
 
-int getScreenWidth()
-{
-	return horizontalPixelCount() / (2 * CHAR_WIDTH);
-}
-
-int getScreenHeight()
-{
-	return verticalPixelCount() / CHAR_HEIGHT;
-}
-
 int strcmp(char *s1, char *s2)
 {
 	while (*s1 != 0 && *s2 != 0 && *s1 == *s2)
