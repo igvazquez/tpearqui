@@ -89,5 +89,5 @@ extern int setScreen(unsigned int id);
 extern char *cpuVendor(char *result);
 
 //syscall 11
-extern char *getTemp( char *result);
+extern int getTemp();
 #endif

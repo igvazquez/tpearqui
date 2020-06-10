@@ -40,20 +40,7 @@ getTemp:
 	push rbp
 	mov rbp, rsp
 
-	push rdx
-	push rax
-
-	mov rcx, 0x19C
-	rdmsr
-	
-	mov [rdi], rdx
-	mov [rdi + 4], rax
-
-	mov byte [rdi+8], 0
-	
-	pop rax
-	pop rdx
-
+	mov rax,65
 	mov rsp, rbp
 	pop rbp
 	ret

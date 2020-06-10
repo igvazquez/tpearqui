@@ -36,7 +36,7 @@ static void triggerException6(int argcount, char *args[]);
 extern char *cpuVendor(char *result);
 static void cpu();
 
-extern char *getTemp( char *result);
+extern int getTemp();
 static void temp();
 
 //printArgs: funcion demostrativa del parseado de argumentos.
@@ -343,8 +343,7 @@ static void cpu()
 }
 static void temp()
 {
-    char *result;
-    result = 0;
-    getTemp( result);
-    println(result);
+    print("CPU Temperature: ");
+    printint(getTemp());
+    println("C");
 }
